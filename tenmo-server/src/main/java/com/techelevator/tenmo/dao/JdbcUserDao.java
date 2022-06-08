@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.User;
+import org.jboss.logging.BasicLogger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -23,14 +24,13 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public int findIdByUsername(String username) {
+    public int findIdByUsername(String username) throws UsernameNotFoundException {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
         Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
         if (id != null) {
             return id;
-        } else {
-            return -1;
         }
+        throw new UsernameNotFoundException("User " + username + " was not found.");
     }
 
     @Override
@@ -53,6 +53,14 @@ public class JdbcUserDao implements UserDao {
             return mapRowToUser(rowSet);
         }
         throw new UsernameNotFoundException("User " + username + " was not found.");
+    }
+
+    // retrieves balance from database where user_id matches param
+    // TODO handle exception better
+    @Override
+    public double findBalanceByUserId(int id) {
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
+        return jdbcTemplate.queryForObject(sql, Double.class, id);
     }
 
     @Override
