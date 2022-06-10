@@ -1,14 +1,15 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 public class AccountService {
     private final String baseUrl;
@@ -35,9 +36,20 @@ public class AccountService {
         return "";
     }
 
+    public String createNewTransfer(Long senderId, Long receiverId, BigDecimal amount) {
+        Transfer transfer = new Transfer();
+        transfer.setSenderId(senderId);
+        transfer.setReceiverId(receiverId);
+        transfer.setAmount(amount);
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, createAuthHeader());
+        transfer = restTemplate.postForObject(baseUrl + "transfer", entity, Transfer.class);
+        return "";
+    }
+
     // Sets headers of the currentUser's jwt
     public HttpHeaders createAuthHeader() {
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(currentUser.getToken());
         return headers;
     }

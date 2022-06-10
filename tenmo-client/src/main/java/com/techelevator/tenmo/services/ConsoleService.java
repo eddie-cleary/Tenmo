@@ -1,13 +1,12 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.model.UserPublic;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -59,13 +58,13 @@ public class ConsoleService {
 
     // Shows a list of all users and their ids in the database
     public void printAllUsers() {
-        ResponseEntity<UserPublic[]> response = restTemplate.getForEntity(baseUrl + "users", UserPublic[].class);
-        UserPublic[] users = response.getBody();
+        ResponseEntity<User[]> response = restTemplate.getForEntity(baseUrl + "users", User[].class);
+        User[] users = response.getBody();
         System.out.println("-------------------------------------------");
         System.out.println("Users");
         System.out.println("ID\tName");
         System.out.println("-------------------------------------------");
-        for (UserPublic user : users) {
+        for (User user : users) {
             System.out.println(user.getId()+"\t"+user.getUsername());
         }
         System.out.println("-------------------------------------------");
@@ -79,7 +78,23 @@ public class ConsoleService {
 
     public String promptForString(String prompt) {
         System.out.print(prompt);
-        return scanner.nextLine();
+        return scanner.next();
+    }
+
+    public Long promptForUserId(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                Long userId = scanner.nextLong();
+                if (userId != 0L) {
+                    return userId;
+                } else {
+                    return 0L;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Please enter a number.");
+            }
+        }
     }
 
     public int promptForInt(String prompt) {
@@ -97,12 +112,13 @@ public class ConsoleService {
         System.out.print(prompt);
         while (true) {
             try {
-                return new BigDecimal(scanner.nextLine());
+                return new BigDecimal(scanner.next());
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a decimal number.");
             }
         }
     }
+
 
     public void pause() {
         System.out.println("\nPress Enter to continue...");

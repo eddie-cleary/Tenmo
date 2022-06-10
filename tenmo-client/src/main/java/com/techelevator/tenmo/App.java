@@ -6,6 +6,8 @@ import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
+import java.math.BigDecimal;
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -109,6 +111,16 @@ public class App {
 	private void sendBucks() {
 		// Display all users
         consoleService.printAllUsers();
+        Long receiverId = consoleService.promptForUserId("Enter id of user you are sending to (0 to cancel): ");
+        if (receiverId == 0) {
+            return;
+        }
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
+        if (currentUser.getUser().getId() == receiverId) {
+            System.out.println("You can not send money to yourself. Try again.");
+            return;
+        }
+        System.out.println(accountService.createNewTransfer(currentUser.getUser().getId(), receiverId, amount));
 	}
 
 	private void requestBucks() {

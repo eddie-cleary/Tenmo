@@ -10,14 +10,14 @@ public interface UserDao {
 
     List<User> findAll();
 
-    List<UserPublic> findAllNameId();
-
     User findByUsername(String username);
 
-    int findIdByUsername(String username);
+    Long findIdByUsername(String username);
 
     // find balance based on user's id
-    double findBalanceByUserId(int id);
+    BigDecimal findBalanceByUserId(Long id);
+
+    User findUserById(Long id);
 
     boolean create(String username, String password);
 }

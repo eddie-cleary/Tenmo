@@ -24,9 +24,9 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public int findIdByUsername(String username) throws UsernameNotFoundException {
+    public Long findIdByUsername(String username) throws UsernameNotFoundException {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
-        Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
+        Long id = jdbcTemplate.queryForObject(sql, Long.class, username);
         if (id != null) {
             return id;
         }
@@ -45,17 +45,14 @@ public class JdbcUserDao implements UserDao {
         return users;
     }
 
-    // This method returns a list of all user data, containing only usernames and ids
     @Override
-    public List<UserPublic> findAllNameId() {
-        List<UserPublic> users = new ArrayList<>();
-        String sql = "SELECT user_id, username FROM tenmo_user;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while (results.next()) {
-            UserPublic user = mapRowToUserPublic(results);
-            users.add(user);
+    public User findUserById(Long id) {
+        String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE user_id = ?;";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
+        if (rowSet.next()) {
+            return mapRowToUser(rowSet);
         }
-        return users;
+        throw new UsernameNotFoundException("User with id " + id + " was not found.");
     }
 
     @Override
@@ -71,9 +68,9 @@ public class JdbcUserDao implements UserDao {
     // retrieves balance from database where user_id matches param
     // TODO handle exception better
     @Override
-    public double findBalanceByUserId(int id) {
+    public BigDecimal findBalanceByUserId(Long id) {
         String sql = "SELECT balance FROM account WHERE user_id = ?;";
-        return jdbcTemplate.queryForObject(sql, Double.class, id);
+        return jdbcTemplate.queryForObject(sql, BigDecimal.class, id);
     }
 
     @Override
