@@ -2,13 +2,24 @@ package com.techelevator.tenmo.services;
 
 
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.UserPublic;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
 
+    private final String baseUrl;
+    private RestTemplate restTemplate = new RestTemplate();
+
     private final Scanner scanner = new Scanner(System.in);
+
+    public ConsoleService(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -44,6 +55,20 @@ public class ConsoleService {
         System.out.println("5: Request TE bucks");
         System.out.println("0: Exit");
         System.out.println();
+    }
+
+    // Shows a list of all users and their ids in the database
+    public void printAllUsers() {
+        ResponseEntity<UserPublic[]> response = restTemplate.getForEntity(baseUrl + "users", UserPublic[].class);
+        UserPublic[] users = response.getBody();
+        System.out.println("-------------------------------------------");
+        System.out.println("Users");
+        System.out.println("ID\tName");
+        System.out.println("-------------------------------------------");
+        for (UserPublic user : users) {
+            System.out.println(user.getId()+"\t"+user.getUsername());
+        }
+        System.out.println("-------------------------------------------");
     }
 
     public UserCredentials promptForCredentials() {

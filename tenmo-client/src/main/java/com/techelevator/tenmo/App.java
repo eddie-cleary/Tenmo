@@ -10,7 +10,7 @@ public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
 
-    private final ConsoleService consoleService = new ConsoleService();
+    private final ConsoleService consoleService = new ConsoleService(API_BASE_URL);
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     // Instantiate an accountService for handling all account related app functions
@@ -107,8 +107,8 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-		
+		// Display all users
+        consoleService.printAllUsers();
 	}
 
 	private void requestBucks() {
