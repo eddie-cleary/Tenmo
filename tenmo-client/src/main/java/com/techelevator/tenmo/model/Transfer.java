@@ -22,6 +22,8 @@ public class Transfer {
         this.status = status;
     }
 
+    public Transfer(){}
+
     public long getSenderId() {
         return senderId;
     }

@@ -14,9 +14,7 @@ public class Transfer {
     @Positive
     private BigDecimal amount;
 
-    public Transfer() {
-        status = TransferStatus.PENDING;
-    }
+    public Transfer() {}
 
     public long getSenderId() {
         return senderId;
