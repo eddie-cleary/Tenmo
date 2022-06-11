@@ -1,18 +1,18 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class Transfer {
+
+    private long transferId;
     private long senderId;
     private long receiverId;
 
-    @Positive
-    private BigDecimal amount;
-
     private TransferStatus status;
     private TransferType type;
+    @Positive
+    private BigDecimal amount;
 
     public Transfer() {
         status = TransferStatus.PENDING;
@@ -56,5 +56,13 @@ public class Transfer {
 
     public void setType(TransferType type) {
         this.type = type;
+    }
+
+    public long getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(long transferId) {
+        this.transferId = transferId;
     }
 }

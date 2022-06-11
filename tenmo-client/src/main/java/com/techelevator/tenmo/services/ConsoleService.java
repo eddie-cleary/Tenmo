@@ -1,10 +1,11 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -14,6 +15,8 @@ public class ConsoleService {
 
     private final String baseUrl;
     private RestTemplate restTemplate = new RestTemplate();
+
+    private AuthenticatedUser currentUser;
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -71,18 +74,20 @@ public class ConsoleService {
         System.out.println("-------------------------------------------");
     }
 
-//    public void printCompletedTransfers() {
-//        ResponseEntity<Transfer[]> response = restTemplate.getForEntity(baseUrl + "transfer/completed", Transfer[].class);
-//        Transfer[] completedTransfers = response.getBody();
-//        System.out.println("-------------------------------------------");
-//        System.out.println("Transfers");
-//        System.out.println("ID\tFrom/To\tAmount");
-//        System.out.println("-------------------------------------------");
-//        for (Transfer transfer : transfers) {
-//            System.out.println(user.getId()+"\t"+user.getUsername());
-//        }
-//        System.out.println("-------------------------------------------");
-//    }
+    public void printCompletedTransfers() {
+        System.out.println("In completed transfers");
+        HttpEntity<String> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] completedTransfers = response.getBody();
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID\tFrom/To\tAmount");
+        System.out.println("-------------------------------------------");
+        for (Transfer transfer : completedTransfers) {
+            System.out.println(transfer.getTransferId()+"\t From:"+transfer.getSenderId()+"\t$ "+transfer.getAmount());
+        }
+        System.out.println("-------------------------------------------");
+    }
 
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");
@@ -133,6 +138,13 @@ public class ConsoleService {
         }
     }
 
+    public HttpHeaders createAuthHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(currentUser.getToken());
+        return headers;
+    }
+
 
     public void pause() {
         System.out.println("\nPress Enter to continue...");
@@ -143,4 +155,11 @@ public class ConsoleService {
         System.out.println("An error occurred. Check the log for details.");
     }
 
+    public AuthenticatedUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(AuthenticatedUser currentUser) {
+        this.currentUser = currentUser;
+    }
 }

@@ -65,6 +65,7 @@ public class App {
         } else {
             // on successful login, set the current user in the accountService
             accountService.setCurrentUser(currentUser);
+            consoleService.setCurrentUser(currentUser);
         }
     }
 
@@ -100,7 +101,7 @@ public class App {
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
 		// View transfers that were sent or received by user
-        //consoleService.printCompletedTransfers();
+        consoleService.printCompletedTransfers();
 	}
 
 	private void viewPendingRequests() {

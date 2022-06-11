@@ -8,13 +8,17 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("transfer")
+@PreAuthorize("isAuthenticated()")
 public class TransferController {
 
     private UserDao userDao;
@@ -41,5 +45,13 @@ public class TransferController {
         return transferDao.sendTransfer(transfer);
     }
 
+    @GetMapping
+    @RequestMapping("/completed")
+    public List<Transfer> getCompletedTransfers(Principal principal) {
+        System.out.println("in transfer/completed");
+        System.out.println("logged in user " + principal.getName());
+        System.out.println("user id you are sending " + userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
+        return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
+    }
 
 }

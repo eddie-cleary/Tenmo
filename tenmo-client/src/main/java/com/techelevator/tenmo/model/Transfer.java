@@ -4,6 +4,8 @@ package com.techelevator.tenmo.model;
 import java.math.BigDecimal;
 
 public class Transfer {
+
+    private long transferId;
     private long senderId;
     private long receiverId;
 
@@ -59,4 +61,13 @@ public class Transfer {
     public void setType(TransferType type) {
         this.type = type;
     }
+
+    public long getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(long transferId) {
+        this.transferId = transferId;
+    }
+
 }
