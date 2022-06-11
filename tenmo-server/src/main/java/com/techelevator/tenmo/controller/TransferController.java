@@ -25,7 +25,7 @@ public class TransferController {
         this.transferDao = transferDao;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public boolean newTransfer(@Valid @RequestBody Transfer transfer) throws InsufficientBalanceException, UserNotFoundException, DataRetrievalFailureException {
         // need to make sure the sender has sufficient funds
         BigDecimal senderCurrBalance = userDao.findBalanceByUserId(transfer.getSenderId());
@@ -37,6 +37,7 @@ public class TransferController {
         if (receiver == null) {
             throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiverId() + " does not exist. Please try again.");
         }
+        System.out.println(transfer.getSenderId() + " " + transfer.getReceiverId() + " " + transfer.getAmount() + " " + transfer.getStatus() + " " + transfer.getType());
         return transferDao.sendTransfer(transfer);
     }
 

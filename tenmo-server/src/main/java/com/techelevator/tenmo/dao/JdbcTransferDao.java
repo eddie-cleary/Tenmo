@@ -26,6 +26,7 @@ public class JdbcTransferDao implements TransferDao {
                 "VALUES (?, ?, ?, ?, ?)";
 
         // Must use account ids and not user ids, userDao is used to find account Id by User Id that was received
+
         if (jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSenderId()), userDao.findAccountIdByUserId(transfer.getReceiverId()), transfer.getAmount()) == 1) {
             return true;
         }
@@ -35,6 +36,7 @@ public class JdbcTransferDao implements TransferDao {
     @Override
     public boolean sendTransfer(Transfer transfer) {
         // Transaction created to make sure both balance changes occur or none at all
+        System.out.println("In send transfer");
         String sql = "BEGIN; " +
                 "UPDATE account " +
                 "SET balance = balance + ? " +
@@ -45,10 +47,11 @@ public class JdbcTransferDao implements TransferDao {
                 "WHERE user_id = ?; " +
                 " " +
                 "COMMIT; ";
-
-        if (jdbcTemplate.update(sql, transfer.getAmount(), transfer.getReceiverId(), transfer.getAmount(), transfer.getSenderId()) == 1) {
-            return true;
-        }
-        throw new DataRetrievalFailureException("Error inserting into database.");
+        System.out.println("after send transfer");
+        int response = jdbcTemplate.update(sql, transfer.getAmount(), transfer.getReceiverId(), transfer.getAmount(), transfer.getSenderId());
+        System.out.println("response " + response);
+        return true;
+        //Test this error
+        //throw new DataRetrievalFailureException("Error inserting into database.");
     }
 }

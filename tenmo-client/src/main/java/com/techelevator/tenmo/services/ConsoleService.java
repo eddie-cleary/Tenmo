@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,19 @@ public class ConsoleService {
         }
         System.out.println("-------------------------------------------");
     }
+
+//    public void printCompletedTransfers() {
+//        ResponseEntity<Transfer[]> response = restTemplate.getForEntity(baseUrl + "transfer/completed", Transfer[].class);
+//        Transfer[] completedTransfers = response.getBody();
+//        System.out.println("-------------------------------------------");
+//        System.out.println("Transfers");
+//        System.out.println("ID\tFrom/To\tAmount");
+//        System.out.println("-------------------------------------------");
+//        for (Transfer transfer : transfers) {
+//            System.out.println(user.getId()+"\t"+user.getUsername());
+//        }
+//        System.out.println("-------------------------------------------");
+//    }
 
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");

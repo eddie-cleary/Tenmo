@@ -8,7 +8,7 @@ public class Transfer {
     private long senderId;
     private long receiverId;
 
-    @Positive(message = "{balance.mustPositive}")
+    @Positive
     private BigDecimal amount;
 
     private TransferStatus status;

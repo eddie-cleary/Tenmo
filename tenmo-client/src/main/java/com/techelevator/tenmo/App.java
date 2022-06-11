@@ -99,7 +99,8 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		// View transfers that were sent or received by user
+        //consoleService.printCompletedTransfers();
 	}
 
 	private void viewPendingRequests() {
@@ -119,7 +120,9 @@ public class App {
         }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
         Transfer transfer = new Transfer(currentUser.getUser().getId(), receiverId, TransferType.SEND, TransferStatus.APPROVED, amount);
-        accountService.sendTransfer(transfer);
+        if (accountService.sendTransfer(transfer)) {
+            System.out.println("Transfer complete.");
+        }
 	}
 
 	private void requestBucks() {
