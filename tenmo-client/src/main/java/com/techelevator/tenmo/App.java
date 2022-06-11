@@ -1,7 +1,6 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
@@ -114,13 +113,13 @@ public class App {
         Long receiverId = consoleService.promptForUserId("Enter id of user you are sending to (0 to cancel): ");
         if (receiverId == 0) {
             return;
-        }
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-        if (currentUser.getUser().getId() == receiverId) {
-            System.out.println("You can not send money to yourself. Try again.");
+        } else if (currentUser.getUser().getId().equals(receiverId)) {
+            System.err.println("You can not send money to yourself. Please try again.");
             return;
         }
-        System.out.println(accountService.createNewTransfer(currentUser.getUser().getId(), receiverId, amount));
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
+        Transfer transfer = new Transfer(currentUser.getUser().getId(), receiverId, TransferType.SEND, TransferStatus.APPROVED, amount);
+        accountService.sendTransfer(transfer);
 	}
 
 	private void requestBucks() {

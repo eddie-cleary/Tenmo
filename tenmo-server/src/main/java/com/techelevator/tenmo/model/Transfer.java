@@ -8,10 +8,15 @@ public class Transfer {
     private long senderId;
     private long receiverId;
 
-    @Positive
+    @Positive(message = "{balance.mustPositive}")
     private BigDecimal amount;
 
-    public Transfer() {}
+    private TransferStatus status;
+    private TransferType type;
+
+    public Transfer() {
+        status = TransferStatus.PENDING;
+    }
 
     public long getSenderId() {
         return senderId;
@@ -35,5 +40,21 @@ public class Transfer {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public TransferStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransferStatus status) {
+        this.status = status;
+    }
+
+    public TransferType getType() {
+        return type;
+    }
+
+    public void setType(TransferType type) {
+        this.type = type;
     }
 }

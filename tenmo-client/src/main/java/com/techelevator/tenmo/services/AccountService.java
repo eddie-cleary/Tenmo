@@ -2,7 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.TransferType;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -36,14 +36,16 @@ public class AccountService {
         return "";
     }
 
-    public String createNewTransfer(Long senderId, Long receiverId, BigDecimal amount) {
-        Transfer transfer = new Transfer();
-        transfer.setSenderId(senderId);
-        transfer.setReceiverId(receiverId);
-        transfer.setAmount(amount);
+    // Method called when user sends money to another user.
+    public boolean sendTransfer(Transfer transfer) {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, createAuthHeader());
-        transfer = restTemplate.postForObject(baseUrl + "transfer", entity, Transfer.class);
-        return "";
+        try {
+            return restTemplate.postForObject(baseUrl + "transfer", entity, Boolean.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     // Sets headers of the currentUser's jwt
