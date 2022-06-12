@@ -6,7 +6,6 @@ import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,25 +31,22 @@ public class TransferController {
     @PostMapping
     public boolean newTransfer(@Valid @RequestBody Transfer transfer) throws InsufficientBalanceException, UserNotFoundException, DataRetrievalFailureException {
         // need to make sure the sender has sufficient funds
-        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(transfer.getSenderId());
+        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(transfer.getSender().getId());
         if (senderCurrBalance.compareTo(transfer.getAmount()) == -1) {
-            throw new InsufficientBalanceException("Insufficient balance. You can not send an amount greater than your balance of: $" + userDao.findBalanceByUserId(transfer.getSenderId()));
+            throw new InsufficientBalanceException("Insufficient balance. You can not send an amount greater than your balance of: $" + userDao.findBalanceByUserId(transfer.getSender().getId()));
         }
         // need to make sure the receiver exists
-        User receiver = userDao.findUserById(transfer.getReceiverId());
+        User receiver = userDao.findUserByUserId(transfer.getReceiver().getId());
         if (receiver == null) {
-            throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiverId() + " does not exist. Please try again.");
+            throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
-        System.out.println(transfer.getSenderId() + " " + transfer.getReceiverId() + " " + transfer.getAmount() + " " + transfer.getStatus() + " " + transfer.getType());
+        System.out.println(transfer.getSender().getId() + " " + transfer.getReceiver().getId() + " " + transfer.getAmount() + " " + transfer.getStatus() + " " + transfer.getType());
         return transferDao.sendTransfer(transfer);
     }
 
     @GetMapping
     @RequestMapping("/completed")
     public List<Transfer> getCompletedTransfers(Principal principal) {
-        System.out.println("in transfer/completed");
-        System.out.println("logged in user " + principal.getName());
-        System.out.println("user id you are sending " + userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
         return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 

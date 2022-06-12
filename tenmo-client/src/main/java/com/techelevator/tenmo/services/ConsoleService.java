@@ -62,7 +62,8 @@ public class ConsoleService {
 
     // Shows a list of all users and their ids in the database
     public void printAllUsers() {
-        ResponseEntity<User[]> response = restTemplate.getForEntity(baseUrl + "users", User[].class);
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, entity, User[].class);
         User[] users = response.getBody();
         System.out.println("-------------------------------------------");
         System.out.println("Users");
@@ -76,17 +77,17 @@ public class ConsoleService {
 
     public void printCompletedTransfers() {
         System.out.println("In completed transfers");
-        HttpEntity<String> entity = new HttpEntity<>(createAuthHeader());
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] completedTransfers = response.getBody();
-        System.out.println("-------------------------------------------");
-        System.out.println("Transfers");
-        System.out.println("ID\tFrom/To\tAmount");
-        System.out.println("-------------------------------------------");
+        System.out.println("--------------------------------------------");
+        System.out.printf("%-18s%-18s%-18s\n","ID","From/To","Amount");
+        System.out.println("--------------------------------------------");
         for (Transfer transfer : completedTransfers) {
-            System.out.println(transfer.getTransferId()+"\t From:"+transfer.getSenderId()+"\t$ "+transfer.getAmount());
+            boolean isCurrentUserSender = (currentUser.getUser().getId().equals(transfer.getSender().getId()));
+            System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(),(isCurrentUserSender ? "To: " : "From: ") + (isCurrentUserSender ? transfer.getReceiver().getUsername() : transfer.getSender().getUsername()),"$"+transfer.getAmount());
         }
-        System.out.println("-------------------------------------------");
+        System.out.println("--------------------------------------------");
     }
 
     public UserCredentials promptForCredentials() {

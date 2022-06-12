@@ -6,9 +6,11 @@ import java.math.BigDecimal;
 public class Transfer {
 
     private long transferId;
-    private long senderId;
-    private long receiverId;
+//    private long senderId;
+//    private long receiverId;
 
+    private User sender;
+    private User receiver;
     private TransferStatus status;
     private TransferType type;
     @Positive
@@ -16,21 +18,21 @@ public class Transfer {
 
     public Transfer() {}
 
-    public long getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(long senderId) {
-        this.senderId = senderId;
-    }
-
-    public long getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(long receiverId) {
-        this.receiverId = receiverId;
-    }
+//    public long getSenderId() {
+//        return senderId;
+//    }
+//
+//    public void setSenderId(long senderId) {
+//        this.senderId = senderId;
+//    }
+//
+//    public long getReceiverId() {
+//        return receiverId;
+//    }
+//
+//    public void setReceiverId(long receiverId) {
+//        this.receiverId = receiverId;
+//    }
 
     public BigDecimal getAmount() {
         return amount;
@@ -62,5 +64,21 @@ public class Transfer {
 
     public void setTransferId(long transferId) {
         this.transferId = transferId;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public User getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
     }
 }

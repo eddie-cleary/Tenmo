@@ -113,14 +113,15 @@ public class App {
 		// Display all users
         consoleService.printAllUsers();
         Long receiverId = consoleService.promptForUserId("Enter id of user you are sending to (0 to cancel): ");
+        User receiver = accountService.getUserByUserId(receiverId);
         if (receiverId == 0) {
             return;
-        } else if (currentUser.getUser().getId().equals(receiverId)) {
+        } else if (currentUser.getUser().getId().equals(receiver.getId())) {
             System.err.println("You can not send money to yourself. Please try again.");
             return;
         }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-        Transfer transfer = new Transfer(currentUser.getUser().getId(), receiverId, TransferType.SEND, TransferStatus.APPROVED, amount);
+        Transfer transfer = new Transfer(currentUser.getUser(), receiver, TransferType.SEND, TransferStatus.APPROVED, amount);
         if (accountService.sendTransfer(transfer)) {
             System.out.println("Transfer complete.");
         }

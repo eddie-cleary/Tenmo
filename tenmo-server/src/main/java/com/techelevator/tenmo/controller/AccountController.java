@@ -5,7 +5,6 @@ import com.techelevator.tenmo.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.security.Principal;
 
@@ -27,8 +26,8 @@ public class AccountController {
         return userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
     }
 
-    @GetMapping(path = "/{userId}")
-    public User getUserById(@PathVariable Long userId) {
-        return userDao.findUserById(userId);
+    @GetMapping(path = "/{id}")
+    public User getUserFromAccountId(@PathVariable Long id) {
+        return userDao.findUserByAccountId(id);
     }
 }

@@ -16,9 +16,11 @@ public interface UserDao {
     // find balance based on user's id
     BigDecimal findBalanceByUserId(Long id);
 
-    User findUserById(Long id);
+    User findUserByUserId(Long id);
 
     Long findAccountIdByUserId(Long id);
+
+    User findUserByAccountId(Long id);
 
     boolean create(String username, String password);
 }

@@ -34,7 +34,7 @@ public class JdbcTransferDao implements TransferDao {
 
         // Must use account ids and not user ids, userDao is used to find account Id by User Id that was received
 
-        if (jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSenderId()), userDao.findAccountIdByUserId(transfer.getReceiverId()), transfer.getAmount()) == 1) {
+        if (jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount()) == 1) {
             return true;
         }
         throw new DataRetrievalFailureException("Database error.");
@@ -58,19 +58,17 @@ public class JdbcTransferDao implements TransferDao {
                 "WHERE user_id = ?; " +
 
                 "COMMIT; ";
-        jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSenderId()), userDao.findAccountIdByUserId(transfer.getReceiverId()), transfer.getAmount(),
-                transfer.getAmount(), transfer.getReceiverId(), transfer.getAmount(), transfer.getSenderId());
+        jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount(),
+                transfer.getAmount(), transfer.getReceiver().getId(), transfer.getAmount(), transfer.getSender().getId());
         return true;
     }
 
     public List<Transfer> getCompletedTransfers(Long id) {
         List completedTransfers = new ArrayList<>();
-        String sql = "SELECT * FROM transfer WHERE account_from = ?;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        String sql = "SELECT * FROM transfer WHERE account_from = ? OR account_to = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id, id);
         while (results.next()) {
-            System.out.println("in transfer mapper");
             Transfer transfer = mapRowToTransfer(results);
-            System.out.println("adding " + transfer.getType() + " to list.");
             completedTransfers.add(transfer);
         }
         return completedTransfers;
@@ -91,8 +89,8 @@ public class JdbcTransferDao implements TransferDao {
                 break;
             }
         }
-        transfer.setSenderId(results.getLong("account_from"));
-        transfer.setReceiverId(results.getLong("account_to"));
+        transfer.setSender(userDao.findUserByAccountId(results.getLong("account_from")));
+        transfer.setReceiver(userDao.findUserByAccountId(results.getLong("account_to")));
         transfer.setAmount(results.getBigDecimal("amount"));
         return transfer;
     }
