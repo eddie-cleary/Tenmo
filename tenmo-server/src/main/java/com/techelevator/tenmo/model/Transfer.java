@@ -13,7 +13,7 @@ public class Transfer {
     private User receiver;
     private TransferStatus status;
     private TransferType type;
-    @Positive
+    @Positive(message = "BE POSITIVE")
     private BigDecimal amount;
 
     public Transfer() {}

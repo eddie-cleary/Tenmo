@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import javax.validation.Valid;
 
+import com.techelevator.tenmo.model.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +20,8 @@ import com.techelevator.tenmo.model.RegisterUserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 /**
  * Controller to authenticate users.
@@ -47,7 +50,7 @@ public class AuthenticationController {
         String jwt = tokenProvider.createToken(authentication, false);
         
         User user = userDao.findByUsername(loginDto.getUsername());
-        return new LoginResponse(jwt, user);
+        return new LoginResponse(jwt, new UserDTO(user));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -64,9 +67,9 @@ public class AuthenticationController {
     static class LoginResponse {
 
         private String token;
-        private User user;
+        private UserDTO user;
 
-        LoginResponse(String token, User user) {
+        LoginResponse(String token, UserDTO user) {
             this.token = token;
             this.user = user;
         }
@@ -79,11 +82,11 @@ public class AuthenticationController {
             this.token = token;
         }
 
-		public User getUser() {
+		public UserDTO getUser() {
 			return user;
 		}
 
-		public void setUser(User user) {
+		public void setUser(UserDTO user) {
 			this.user = user;
 		}
     }

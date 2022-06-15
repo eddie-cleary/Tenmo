@@ -43,7 +43,6 @@ public class JdbcTransferDao implements TransferDao {
     @Override
     public boolean sendTransfer(Transfer transfer) {
         // Transaction created to make sure both balance changes occur or none at all
-        System.out.println("In send transfer");
         String sql = "BEGIN; " +
 
                 "INSERT INTO transfer(transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
