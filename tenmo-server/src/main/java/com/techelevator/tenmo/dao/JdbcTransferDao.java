@@ -1,8 +1,6 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferStatus;
-import com.techelevator.tenmo.model.TransferType;
+import com.techelevator.tenmo.model.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -72,12 +70,12 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    public List<Transfer> getCompletedTransfers(Long id) {
+    public List<TransferDTO> getCompletedTransfers(Long id) {
         List completedTransfers = new ArrayList<>();
         String sql = "SELECT * FROM transfer WHERE account_from = ? OR account_to = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id, id);
         while (results.next()) {
-            Transfer transfer = mapRowToTransfer(results);
+            TransferDTO transfer = mapRowToTransferDTO(results);
             completedTransfers.add(transfer);
         }
         return completedTransfers;
@@ -100,6 +98,27 @@ public class JdbcTransferDao implements TransferDao {
         }
         transfer.setSender(userDao.findUserByAccountId(results.getLong("account_from")));
         transfer.setReceiver(userDao.findUserByAccountId(results.getLong("account_to")));
+        transfer.setAmount(results.getBigDecimal("amount"));
+        return transfer;
+    }
+
+    public TransferDTO mapRowToTransferDTO(SqlRowSet results) {
+        TransferDTO transfer = new TransferDTO();
+        transfer.setTransferId(results.getLong("transfer_id"));
+        for (TransferType type : TransferType.values()) {
+            if (results.getInt("transfer_type_id") == type.getTransferId()) {
+                transfer.setType(type);
+                break;
+            }
+        }
+        for (TransferStatus status : TransferStatus.values()) {
+            if (results.getInt("transfer_status_id") == status.getStatusId()) {
+                transfer.setStatus(status);
+                break;
+            }
+        }
+        transfer.setSender(new UserDTO(userDao.findUserByAccountId(results.getLong("account_from"))));
+        transfer.setReceiver(new UserDTO(userDao.findUserByAccountId(results.getLong("account_to"))));
         transfer.setAmount(results.getBigDecimal("amount"));
         return transfer;
     }

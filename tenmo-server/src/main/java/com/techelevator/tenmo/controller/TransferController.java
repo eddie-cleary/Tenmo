@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -48,7 +49,7 @@ public class TransferController {
 
     @GetMapping
     @RequestMapping("/completed")
-    public List<Transfer> getCompletedTransfers(Principal principal) {
+    public List<TransferDTO> getCompletedTransfers(Principal principal) {
         return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 

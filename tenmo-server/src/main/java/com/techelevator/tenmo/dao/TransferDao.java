@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 
 import java.security.Principal;
 import java.sql.SQLException;
@@ -11,5 +12,5 @@ public interface TransferDao {
 
     boolean sendTransfer(Transfer transfer) throws SQLException;
 
-    List<Transfer> getCompletedTransfers(Long id);
+    List<TransferDTO> getCompletedTransfers(Long id);
 }

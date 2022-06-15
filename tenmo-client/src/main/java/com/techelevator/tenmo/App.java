@@ -99,7 +99,6 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
 		// View transfers that were sent or received by user
         consoleService.printCompletedTransfers();
 	}
