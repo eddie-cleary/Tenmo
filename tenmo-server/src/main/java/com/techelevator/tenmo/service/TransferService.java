@@ -48,7 +48,7 @@ public class TransferService {
     }
 
     public List<TransferDTO> getCompletedTransfers(Principal principal) {
-        return transferDao.getCompletedTransfers(userDao.findIdByUsername(principal.getName()));
+        return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 
     public TransferDTO getTransferById(Long id) {

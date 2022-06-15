@@ -76,7 +76,6 @@ public class ConsoleService {
     }
 
     public void printCompletedTransfers() {
-        System.out.println("In completed transfers");
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] completedTransfers = response.getBody();

@@ -101,10 +101,19 @@ public class App {
 
 	private void viewTransferHistory() {
 		// View transfers that were sent or received by user
-        consoleService.printCompletedTransfers();
-        Long transactionId = consoleService.promptForLong("Please enter transfer ID to view details (0 to cancel): ");
-        if (transactionId > 0) {
-            consoleService.printTransactionDetails(transactionId);
+        Long transactionId = 1L;
+        while (!(transactionId.equals(0L))) {
+            consoleService.printCompletedTransfers();
+            transactionId = consoleService.promptForLong("Please enter transfer ID to view details (0 to cancel): ");
+            System.out.println();
+            if (transactionId.equals(0L)) {
+                return;
+            } else {
+                consoleService.printTransactionDetails(transactionId);
+                System.out.println("--------------------------------------------");
+                consoleService.pause();
+                System.out.println();
+            }
         }
 	}
 
