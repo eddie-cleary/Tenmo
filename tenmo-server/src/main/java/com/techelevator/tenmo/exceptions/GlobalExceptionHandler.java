@@ -1,7 +1,9 @@
 package com.techelevator.tenmo.exceptions;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public String handleDataRetrievalFailureException(MethodArgumentNotValidException ex) {
+    public String handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> errors = bindingResult.getFieldErrors();
         String message = "";
@@ -35,5 +37,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public String handleResponseStatusException(ResponseStatusException ex) {
         return ex.getReason();
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public String handleAuthenticationException(AuthenticationException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(DataRetrievalFailureException.class)
+    public String handleDataRetrievalFailureException(DataRetrievalFailureException ex) {
+        return ex.getMessage();
     }
 }

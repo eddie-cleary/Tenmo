@@ -121,7 +121,7 @@ public class App {
             return;
         }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-        Transfer transfer = new Transfer(currentUser.getUser(), receiver, TransferType.SEND, TransferStatus.APPROVED, amount);
+        Transfer transfer = new Transfer(receiver, TransferType.SEND, TransferStatus.APPROVED, amount);
         if (accountService.sendTransfer(transfer)) {
             System.out.println("Transfer complete.");
         }

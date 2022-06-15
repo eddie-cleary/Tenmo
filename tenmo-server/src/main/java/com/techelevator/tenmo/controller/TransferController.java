@@ -6,6 +6,7 @@ import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -29,9 +31,9 @@ public class TransferController {
     }
 
     @PostMapping
-    public boolean newTransfer(@Valid @RequestBody Transfer transfer) throws InsufficientBalanceException, UserNotFoundException, DataRetrievalFailureException {
+    public boolean newTransfer(@Valid @RequestBody Transfer transfer, Principal principal) throws InsufficientBalanceException, UserNotFoundException, DataRetrievalFailureException, SQLException {
         // need to make sure the sender has sufficient funds
-        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(transfer.getSender().getId());
+        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
         if (senderCurrBalance.compareTo(transfer.getAmount()) == -1) {
             throw new InsufficientBalanceException("Insufficient balance. You can not send an amount greater than your balance of: $" + userDao.findBalanceByUserId(transfer.getSender().getId()));
         }
@@ -40,7 +42,7 @@ public class TransferController {
         if (receiver == null) {
             throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
-        System.out.println(transfer.getSender().getId() + " " + transfer.getReceiver().getId() + " " + transfer.getAmount() + " " + transfer.getStatus() + " " + transfer.getType());
+        transfer.setSender(userDao.findByUsername(principal.getName()));
         return transferDao.sendTransfer(transfer);
     }
 

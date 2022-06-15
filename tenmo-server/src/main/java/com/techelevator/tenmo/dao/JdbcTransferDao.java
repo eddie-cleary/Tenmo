@@ -10,6 +10,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.Data;
+import java.security.Principal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +37,19 @@ public class JdbcTransferDao implements TransferDao {
 
         // Must use account ids and not user ids, userDao is used to find account Id by User Id that was received
 
-        if (jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount()) == 1) {
+        try {
+            jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount());
             return true;
+        } catch (DataAccessException ex) {
+            throw new DataRetrievalFailureException("Error creating transfer.");
         }
-        throw new DataRetrievalFailureException("Database error.");
+
     }
 
     @Override
-    public boolean sendTransfer(Transfer transfer) {
+    public boolean sendTransfer(Transfer transfer) throws SQLException {
         // Transaction created to make sure both balance changes occur or none at all
-        String sql = "BEGIN; " +
-
+        String sql = "" +
                 "INSERT INTO transfer(transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                 "VALUES (?, ?, ?, ?, ?);" +
 
@@ -54,12 +59,17 @@ public class JdbcTransferDao implements TransferDao {
 
                 "UPDATE account " +
                 "SET balance = balance - ? " +
-                "WHERE user_id = ?; " +
+                "WHERE user_id = ?;";
 
-                "COMMIT; ";
-        jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount(),
-                transfer.getAmount(), transfer.getReceiver().getId(), transfer.getAmount(), transfer.getSender().getId());
-        return true;
+        try {
+            jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount(),
+                    transfer.getAmount(), transfer.getReceiver().getId(), transfer.getAmount(), transfer.getSender().getId());
+            return true;
+        } catch (DataAccessException ex) {
+            jdbcTemplate.getDataSource().getConnection().close();
+            throw new DataRetrievalFailureException("Error sending transfer.");
+        }
+
     }
 
     public List<Transfer> getCompletedTransfers(Long id) {

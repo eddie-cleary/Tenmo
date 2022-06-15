@@ -6,9 +6,6 @@ import java.math.BigDecimal;
 public class Transfer {
 
     private long transferId;
-//    private long senderId;
-//    private long receiverId;
-
     private User sender;
     private User receiver;
     private TransferStatus status;

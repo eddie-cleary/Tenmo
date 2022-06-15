@@ -96,7 +96,6 @@ public class JdbcUserDao implements UserDao {
         try {
             return jdbcTemplate.queryForObject(sql, BigDecimal.class, id);
         } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
             return null;
         }
 
