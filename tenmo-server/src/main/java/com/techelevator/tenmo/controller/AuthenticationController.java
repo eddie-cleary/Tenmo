@@ -2,7 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import javax.validation.Valid;
 
-import com.techelevator.tenmo.model.UserDTO;
+import com.techelevator.tenmo.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,13 +15,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.LoginDTO;
-import com.techelevator.tenmo.model.RegisterUserDTO;
+import com.techelevator.tenmo.dto.LoginDTO;
+import com.techelevator.tenmo.dto.RegisterUserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 /**
  * Controller to authenticate users.

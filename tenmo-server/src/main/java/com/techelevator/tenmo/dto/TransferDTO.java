@@ -1,4 +1,7 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.dto;
+
+import com.techelevator.tenmo.model.TransferStatus;
+import com.techelevator.tenmo.model.TransferType;
 
 import java.math.BigDecimal;
 

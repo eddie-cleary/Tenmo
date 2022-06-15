@@ -1,15 +1,14 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.dto.TransferDTO;
+import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.model.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,6 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.dto;
+
+import com.techelevator.tenmo.model.User;
 
 public class UserDTO {
     private Long id;

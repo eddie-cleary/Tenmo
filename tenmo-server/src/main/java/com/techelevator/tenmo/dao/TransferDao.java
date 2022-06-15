@@ -1,9 +1,8 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferDTO;
+import com.techelevator.tenmo.dto.TransferDTO;
 
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
 
