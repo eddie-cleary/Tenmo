@@ -118,31 +118,109 @@ public class App {
 	}
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
+		// Print all pending requests
+        Transfer[] pendingTransfers = consoleService.printPendingTransfers();
+        Long transferId = 1L;
+        Transfer selectedTransfer = null;
+        while (!transferId.equals(0L)) {
+            transferId = consoleService.promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
+            for (Transfer transfer : pendingTransfers) {
+                if (transferId.equals(transfer.getTransferId())) {
+                    selectedTransfer = transfer;
+                }
+            }
+            System.out.println("1: Approve");
+            System.out.println("2: Reject");
+            System.out.println("0: Don't approve or reject");
+            System.out.println("-----------");
+            int menuSelection = consoleService.promptForInt("Please choose an option: ");
+            switch (menuSelection) {
+                case 1:
+                    selectedTransfer.setStatus(TransferStatus.APPROVED);
+                    if (accountService.sendTransfer(selectedTransfer)) {
+                        System.out.println("Transfer approved.");
+                        System.out.println();
+                    }
+                    break;
+                case 2:
+                    selectedTransfer.setStatus(TransferStatus.REJECTED);
+                    if (accountService.sendTransfer(selectedTransfer)) {
+                        System.out.println("Transfer rejected.");
+                        System.out.println();
+                    }
+                    break;
+                case 0:
+                    transferId = 0L;
+            }
+        }
 	}
 
 	private void sendBucks() {
-		// Display all users
-        consoleService.printAllUsers();
-        Long receiverId = consoleService.promptForUserId("Enter id of user you are sending to (0 to cancel): ");
-        User receiver = accountService.getUserByUserId(receiverId);
-        if (receiverId == 0) {
-            return;
-        } else if (currentUser.getUser().getId().equals(receiver.getId())) {
-            System.err.println("You can not send money to yourself. Please try again.");
-            return;
-        }
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-        Transfer transfer = new Transfer(receiver, TransferType.SEND, TransferStatus.APPROVED, amount);
-        if (accountService.sendTransfer(transfer)) {
+        Transfer newTransfer = gatherSendTransferInfo();
+        if (accountService.sendTransfer(newTransfer)) {
             System.out.println("Transfer complete.");
         }
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
-		
+        Transfer newTransfer = gatherRequestTransferInfo();
+        if (accountService.sendTransfer(newTransfer)) {
+            System.out.println("Transfer request complete.");
+        }
 	}
 
+    private Transfer gatherSendTransferInfo() {
+        consoleService.printAllUsers();
+        Long receiverId = consoleService.promptForUserId("Enter ID of user you are sending to (0 to cancel): ");
+        if (!validateReceiver(receiverId)) {
+            return null;
+        }
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
+        if (!validateAmount(amount)) {
+            return null;
+        }
+        Transfer newTransfer = new Transfer();
+        newTransfer.setReceiver(accountService.getUserByUserId(receiverId));
+        newTransfer.setAmount(amount);
+        newTransfer.setType(TransferType.SEND);
+        newTransfer.setStatus(TransferStatus.APPROVED);
+        return newTransfer;
+    }
+
+    private Transfer gatherRequestTransferInfo() {
+        consoleService.printAllUsers();
+        Long receiverId = consoleService.promptForUserId("Enter ID of user you are requesting from (0 to cancel): ");
+        if (!validateReceiver(receiverId)) {
+            return null;
+        }
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to request: ");
+        if (!validateAmount(amount)) {
+            return null;
+        }
+        Transfer newTransfer = new Transfer();
+        newTransfer.setSender(accountService.getUserByUserId(receiverId));
+        newTransfer.setAmount(amount);
+        newTransfer.setType(TransferType.REQUEST);
+        newTransfer.setStatus(TransferStatus.PENDING);
+        return newTransfer;
+    }
+
+    private boolean validateReceiver(Long receiverId) {
+        User receiver = accountService.getUserByUserId(receiverId);
+        if (receiverId.equals(0L)) {
+            return false;
+        } else if (currentUser.getUser().getId().equals(receiver.getId())) {
+            System.err.println("You can not send money to yourself. Please try again.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateAmount(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+            return true;
+        }
+        System.err.println("Please enter an amount greater than $0.00");
+        return false;
+    }
 }

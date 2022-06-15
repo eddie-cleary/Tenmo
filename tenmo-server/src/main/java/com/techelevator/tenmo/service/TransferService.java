@@ -6,9 +6,9 @@ import com.techelevator.tenmo.dto.TransferDTO;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,8 +47,36 @@ public class TransferService {
         return transferDao.sendTransfer(transfer);
     }
 
+    public boolean requestTransfer(Transfer transfer, Principal principal) throws UserNotFoundException {
+        User sender = userDao.findUserByUserId(transfer.getSender().getId());
+        if (sender == null) {
+            throw new UserNotFoundException("User " + transfer.getReceiver().getId() + " does not exist. Please try again.");
+        }
+        transfer.setReceiver(userDao.findByUsername(principal.getName()));
+        return transferDao.requestTransfer(transfer);
+    }
+
+    public boolean rejectTransfer(Transfer transfer, Principal principal) throws UserNotFoundException, SQLException {
+        if (principal.getName().equals(transfer.getSender().getUsername())) {
+            return transferDao.rejectTransfer(transfer);
+        }
+        return false;
+    }
+
+    public boolean approveTransfer(Transfer transfer, Principal principal) throws UserNotFoundException, SQLException, InsufficientBalanceException {
+        if (principal.getName().equals(transfer.getSender().getUsername())) {
+            return transferDao.approveTransfer(transfer);
+        } else {
+            return false;
+        }
+    }
+
     public List<TransferDTO> getCompletedTransfers(Principal principal) {
         return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
+    }
+
+    public List<TransferDTO> getPendingTransfers(Principal principal) {
+        return transferDao.getPendingTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 
     public TransferDTO getTransferById(Long id) {

@@ -1,14 +1,13 @@
 package com.techelevator.tenmo.services;
 
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -87,6 +86,20 @@ public class ConsoleService {
             System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(),(isCurrentUserSender ? "To: " : "From: ") + (isCurrentUserSender ? transfer.getReceiver().getUsername() : transfer.getSender().getUsername()),"$"+transfer.getAmount());
         }
         System.out.println("--------------------------------------------");
+    }
+
+    public Transfer[] printPendingTransfers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] pendingTransfers = response.getBody();
+        System.out.println("--------------------------------------------");
+        System.out.printf("%-18s%-18s%-18s\n","ID","From","Amount");
+        System.out.println("--------------------------------------------");
+        for (Transfer transfer : pendingTransfers) {
+            System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(),"$"+transfer.getAmount());
+        }
+        System.out.println("--------------------------------------------");
+        return pendingTransfers;
     }
 
     public void printTransactionDetails(Long transactionId) {

@@ -3,6 +3,7 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,9 @@ import java.security.Principal;
 // Users must be authenticated to access their account
 @PreAuthorize("isAuthenticated()")
 public class AccountController {
+    @Autowired
     private UserDao userDao;
+    @Autowired
     private UserService userService;
 
     public AccountController(UserDao userDao){

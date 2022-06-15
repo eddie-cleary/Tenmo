@@ -11,7 +11,13 @@ public interface TransferDao {
 
     boolean sendTransfer(Transfer transfer) throws SQLException;
 
+    boolean approveTransfer(Transfer transfer) throws SQLException;
+
+    boolean rejectTransfer(Transfer transfer) throws SQLException;
+
     List<TransferDTO> getCompletedTransfers(Long id);
+
+    List<TransferDTO> getPendingTransfers(Long id);
 
     TransferDTO getTransferById(Long id);
 }
