@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.security.Principal;
 @PreAuthorize("isAuthenticated()")
 public class AccountController {
     private UserDao userDao;
+    private UserService userService;
 
     public AccountController(UserDao userDao){
         this.userDao = userDao;
@@ -21,13 +23,11 @@ public class AccountController {
 
     @GetMapping
     public BigDecimal getUserBalance(Principal principal) {
-        // When an authenticated user makes a get request to /account, Spring identifies which user it is based on
-        // principal. We then find their id based on their username, and then return their balance based on the found id
-        return userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
+        return userService.getUserBalance(principal);
     }
 
     @GetMapping(path = "/{id}")
     public User getUserFromAccountId(@PathVariable Long id) {
-        return userDao.findUserByAccountId(id);
+        return userService.findUserByAccountId(id);
     }
 }

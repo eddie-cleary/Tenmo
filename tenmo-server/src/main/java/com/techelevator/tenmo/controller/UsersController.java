@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,17 +18,19 @@ public class UsersController {
 
     private UserDao userDao;
 
+    private UserService userService;
+
     public UsersController(UserDao userDao) {
         this.userDao = userDao;
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userDao.findAll();
+        return userService.getAllUsers();
     }
 
     @GetMapping(path = "/{userId}")
     public User getUserById(@PathVariable Long userId) {
-        return userDao.findUserByUserId(userId);
+        return userService.findUserByUserId(userId);
     }
 }
