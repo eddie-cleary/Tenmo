@@ -90,6 +90,20 @@ public class ConsoleService {
         System.out.println("--------------------------------------------");
     }
 
+    public void printTransactionDetails(Long transactionId) {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfer/" + transactionId, HttpMethod.GET, entity, Transfer.class);
+        Transfer transfer = response.getBody();
+        System.out.println("Transfer Details");
+        System.out.println("--------------------------------------------");
+        System.out.println("Id: " + transfer.getTransferId());
+        System.out.println("From: " + transfer.getSender().getUsername());
+        System.out.println("To: " + transfer.getReceiver().getUsername());
+        System.out.println("Type: " + transfer.getType());
+        System.out.println("Status: " + transfer.getStatus());
+        System.out.println("Amount: " + transfer.getAmount());
+    }
+
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");
         String password = promptForString("Password: ");
@@ -122,6 +136,17 @@ public class ConsoleService {
         while (true) {
             try {
                 return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
+
+    public Long promptForLong(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return Long.parseLong(scanner.nextLine());
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a number.");
             }

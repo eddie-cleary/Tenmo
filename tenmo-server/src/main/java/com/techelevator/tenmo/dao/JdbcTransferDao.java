@@ -27,6 +27,17 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
+    public TransferDTO getTransferById(Long id) {
+        String sql = "SELECT * FROM transfer WHERE transfer_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        while (results.next()) {
+            TransferDTO transfer = mapRowToTransferDTO(results);
+            return transfer;
+        }
+        return null;
+    }
+
+    @Override
     public boolean requestTransfer(Transfer transfer){
         String sql = "" +
                 "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
@@ -63,7 +74,6 @@ public class JdbcTransferDao implements TransferDao {
                     transfer.getAmount(), transfer.getReceiver().getId(), transfer.getAmount(), transfer.getSender().getId());
             return true;
         } catch (DataAccessException ex) {
-            jdbcTemplate.getDataSource().getConnection().close();
             throw new DataRetrievalFailureException("Error sending transfer.");
         }
 

@@ -7,21 +7,29 @@ import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public class TransferService {
 
+    @Autowired
     private UserDao userDao;
+    @Autowired
     private TransferDao transferDao;
 
-    public TransferService(UserDao userDao) {
+    public TransferService(UserDao userDao, TransferDao transferDao) {
         this.userDao = userDao;
         this.transferDao = transferDao;
     }
+
+    public TransferService() {}
 
     public boolean sendTransfer(Transfer transfer, Principal principal) throws InsufficientBalanceException, UserNotFoundException, SQLException {
         // Make sure the sender has sufficient funds
@@ -41,6 +49,10 @@ public class TransferService {
 
     public List<TransferDTO> getCompletedTransfers(Principal principal) {
         return transferDao.getCompletedTransfers(userDao.findIdByUsername(principal.getName()));
+    }
+
+    public TransferDTO getTransferById(Long id) {
+        return transferDao.getTransferById(id);
     }
 }
 
