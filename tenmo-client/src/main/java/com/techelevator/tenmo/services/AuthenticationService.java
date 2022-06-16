@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,12 +27,15 @@ public class AuthenticationService {
     public AuthenticatedUser login(UserCredentials credentials) {
         HttpEntity<UserCredentials> entity = createCredentialsEntity(credentials);
         AuthenticatedUser user = null;
+        ResponseEntity<AuthenticatedUser> response = null;
         try {
-            ResponseEntity<AuthenticatedUser> response =
+            response =
                     restTemplate.exchange(baseUrl + "login", HttpMethod.POST, entity, AuthenticatedUser.class);
             user = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
+        } catch (RestClientException e) {
+            if (e.getMessage().contains("Unrecognized token 'Bad'")) {
+                System.err.println("Bad credentials. Try again");
+            }
         }
         return user;
     }

@@ -49,4 +49,9 @@ public class GlobalExceptionHandler {
     public String handleDataRetrievalFailureException(DataRetrievalFailureException ex) {
         return ex.getMessage();
     }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public String handleBadCredentialsException(BadCredentialsException ex) {
+        return ex.getMessage();
+    }
 }

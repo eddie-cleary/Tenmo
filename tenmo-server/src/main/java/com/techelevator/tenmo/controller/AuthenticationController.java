@@ -21,6 +21,7 @@ import com.techelevator.tenmo.dto.RegisterUserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 /**
  * Controller to authenticate users.
@@ -39,14 +40,13 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public LoginResponse login(@Valid @RequestBody LoginDTO loginDto) {
+    public LoginResponse login(@Valid @RequestBody LoginDTO loginDto) throws BadCredentialsException {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authentication;
+        authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
-
         User user = userDao.findByUsername(loginDto.getUsername());
         return new LoginResponse(jwt, new UserDTO(user));
     }
