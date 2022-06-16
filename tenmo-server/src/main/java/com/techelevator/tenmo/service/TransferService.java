@@ -10,6 +10,7 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -53,6 +54,9 @@ public class TransferService {
         if (sender == null) {
             throw new UserNotFoundException("User " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
+        if (sender.getId().equals(userDao.findIdByUsername(principal.getName()))) {
+            throw new DataRetrievalFailureException("You cannot request a transfer from yourself.");
+        }
         transfer.setReceiver(userDao.findByUsername(principal.getName()));
         return transferDao.requestTransfer(transfer);
     }
@@ -68,7 +72,7 @@ public class TransferService {
         if (principal.getName().equals(transfer.getSender().getUsername())) {
             return transferDao.approveTransfer(transfer);
         } else {
-            return false;
+            throw new DataRetrievalFailureException("Only logged in users can approve a transfer.");
         }
     }
 

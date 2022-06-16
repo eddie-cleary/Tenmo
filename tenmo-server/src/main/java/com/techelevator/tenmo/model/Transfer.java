@@ -10,26 +10,10 @@ public class Transfer {
     private User receiver;
     private TransferStatus status;
     private TransferType type;
-    @Positive(message = "BE POSITIVE")
+    @Positive(message = "Transfer amount must be positive.")
     private BigDecimal amount;
 
     public Transfer() {}
-
-//    public long getSenderId() {
-//        return senderId;
-//    }
-//
-//    public void setSenderId(long senderId) {
-//        this.senderId = senderId;
-//    }
-//
-//    public long getReceiverId() {
-//        return receiverId;
-//    }
-//
-//    public void setReceiverId(long receiverId) {
-//        this.receiverId = receiverId;
-//    }
 
     public BigDecimal getAmount() {
         return amount;

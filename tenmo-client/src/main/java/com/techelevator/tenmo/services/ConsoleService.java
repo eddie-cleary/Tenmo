@@ -27,7 +27,7 @@ public class ConsoleService {
         int menuSelection;
         System.out.print(prompt);
         try {
-            menuSelection = Integer.parseInt(scanner.nextLine());
+            menuSelection = Integer.parseInt(scanner.next());
         } catch (NumberFormatException e) {
             menuSelection = -1;
         }
@@ -92,13 +92,6 @@ public class ConsoleService {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] pendingTransfers = response.getBody();
-        System.out.println("--------------------------------------------");
-        System.out.printf("%-18s%-18s%-18s\n","ID","From","Amount");
-        System.out.println("--------------------------------------------");
-        for (Transfer transfer : pendingTransfers) {
-            System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(),"$"+transfer.getAmount());
-        }
-        System.out.println("--------------------------------------------");
         return pendingTransfers;
     }
 

@@ -96,7 +96,7 @@ public class App {
 
 	private void viewCurrentBalance() {
         // Print out account balance of currently logged in user
-        System.out.println("Your current balance is: " + accountService.getUserBalance());
+        System.out.println("Your current balance is: $" + accountService.getUserBalance());
 	}
 
 	private void viewTransferHistory() {
@@ -120,10 +120,24 @@ public class App {
 	private void viewPendingRequests() {
 		// Print all pending requests
         Transfer[] pendingTransfers = consoleService.printPendingTransfers();
+        if (pendingTransfers.length == 0) {
+            System.out.println("You have no pending requests.");
+            return;
+        }
+        System.out.println("--------------------------------------------");
+        System.out.printf("%-18s%-18s%-18s\n","ID","From","Amount");
+        System.out.println("--------------------------------------------");
+        for (Transfer transfer : pendingTransfers) {
+            System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(),"$"+transfer.getAmount());
+        }
+        System.out.println("--------------------------------------------");
         Long transferId = 1L;
         Transfer selectedTransfer = null;
-        while (!transferId.equals(0L)) {
+        while (!(transferId.equals(0L))) {
             transferId = consoleService.promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
+            if (transferId.equals(0L)) {
+                break;
+            }
             for (Transfer transfer : pendingTransfers) {
                 if (transferId.equals(transfer.getTransferId())) {
                     selectedTransfer = transfer;
@@ -164,6 +178,9 @@ public class App {
 
 	private void requestBucks() {
         Transfer newTransfer = gatherRequestTransferInfo();
+        if (newTransfer == null) {
+            return;
+        }
         if (accountService.sendTransfer(newTransfer)) {
             System.out.println("Transfer request complete.");
         }
@@ -211,6 +228,7 @@ public class App {
             return false;
         } else if (currentUser.getUser().getId().equals(receiver.getId())) {
             System.err.println("You can not send money to yourself. Please try again.");
+            System.out.println();
             return false;
         }
         return true;
