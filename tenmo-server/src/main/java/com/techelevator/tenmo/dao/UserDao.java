@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.model.User;
 
 import java.math.BigDecimal;

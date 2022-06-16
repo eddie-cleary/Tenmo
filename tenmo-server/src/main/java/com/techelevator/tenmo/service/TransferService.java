@@ -3,6 +3,7 @@ package com.techelevator.tenmo.service;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.dto.TransferDTO;
+import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
