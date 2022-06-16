@@ -60,11 +60,10 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
-
         if (currentUser == null) {
             consoleService.printErrorMessage();
         } else {
-            // on successful login, set the current user in the accountService
+            // on successful login, set the current user in the account and console services
             accountService.setCurrentUser(currentUser);
             consoleService.setCurrentUser(currentUser);
         }
@@ -95,78 +94,34 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-        // Print out account balance of currently logged in user
+        // Print out account balance of current logged in user
         System.out.println("Your current balance is: $" + accountService.getUserBalance());
 	}
 
 	private void viewTransferHistory() {
-		// View transfers that were sent or received by user
+		// View transfers that were sent or received by logged in user
         Long transactionId = 1L;
         while (!(transactionId.equals(0L))) {
-            consoleService.printCompletedTransfers();
-            transactionId = consoleService.promptForLong("Please enter transfer ID to view details (0 to cancel): ");
-            System.out.println();
-            if (transactionId.equals(0L)) {
-                return;
-            } else {
-                consoleService.printTransactionDetails(transactionId);
-                System.out.println("--------------------------------------------");
-                consoleService.pause();
-                System.out.println();
+            Transfer[] completedTransfers = consoleService.printCompletedTransfers();
+            if (completedTransfers != null) {
+                transactionId = consoleService.promptForTransferDetails(completedTransfers);
             }
         }
-	}
+    }
 
 	private void viewPendingRequests() {
 		// Print all pending requests
-        Transfer[] pendingTransfers = consoleService.printPendingTransfers();
-        if (pendingTransfers.length == 0) {
-            System.out.println("You have no pending requests.");
-            return;
-        }
-        System.out.println("--------------------------------------------");
-        System.out.printf("%-18s%-18s%-18s\n","ID","From","Amount");
-        System.out.println("--------------------------------------------");
-        for (Transfer transfer : pendingTransfers) {
-            System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(),"$"+transfer.getAmount());
-        }
-        System.out.println("--------------------------------------------");
-        Long transferId = 1L;
-        Transfer selectedTransfer = null;
-        while (!(transferId.equals(0L))) {
-            transferId = consoleService.promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
-            if (transferId.equals(0L)) {
+        Long userInput = 1L;
+        while (!(userInput.equals(0L))) {
+            Transfer[] pendingTransfers = consoleService.printPendingTransfers();
+            if (pendingTransfers.length == 0) {
+                System.out.println("You have no pending requests.");
                 break;
             }
-            for (Transfer transfer : pendingTransfers) {
-                if (transferId.equals(transfer.getTransferId())) {
-                    selectedTransfer = transfer;
-                }
-            }
-            System.out.println("1: Approve");
-            System.out.println("2: Reject");
-            System.out.println("0: Don't approve or reject");
-            System.out.println("-----------");
-            int menuSelection = consoleService.promptForInt("Please choose an option: ");
-            switch (menuSelection) {
-                case 1:
-                    selectedTransfer.setStatus(TransferStatus.APPROVED);
-                    if (accountService.sendTransfer(selectedTransfer)) {
-                        System.out.println("Transfer approved.");
-                        System.out.println();
-                    }
-                    break;
-                case 2:
-                    selectedTransfer.setStatus(TransferStatus.REJECTED);
-                    if (accountService.sendTransfer(selectedTransfer)) {
-                        System.out.println("Transfer rejected.");
-                        System.out.println();
-                    }
-                    break;
-                case 0:
-                    transferId = 0L;
-            }
+            userInput = consoleService.handleRequestApproval(pendingTransfers, accountService);
         }
+        return;
+
 	}
 
 	private void sendBucks() {

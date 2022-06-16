@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.App;
 import com.techelevator.tenmo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,15 +14,14 @@ import java.util.Scanner;
 public class ConsoleService {
 
     private final String baseUrl;
+    public ConsoleService(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
     private RestTemplate restTemplate = new RestTemplate();
 
     private AuthenticatedUser currentUser;
 
     private final Scanner scanner = new Scanner(System.in);
-
-    public ConsoleService(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -74,10 +74,15 @@ public class ConsoleService {
         System.out.println("-------------------------------------------");
     }
 
-    public void printCompletedTransfers() {
+    public Transfer[] printCompletedTransfers() {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] completedTransfers = response.getBody();
+        if (completedTransfers.length == 0) {
+            System.out.println("You have no completed transfers.");
+            System.out.println();
+            return null;
+        }
         System.out.println("--------------------------------------------");
         System.out.printf("%-18s%-18s%-18s\n","ID","From/To","Amount");
         System.out.println("--------------------------------------------");
@@ -86,14 +91,78 @@ public class ConsoleService {
             System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(),(isCurrentUserSender ? "To: " : "From: ") + (isCurrentUserSender ? transfer.getReceiver().getUsername() : transfer.getSender().getUsername()),"$"+transfer.getAmount());
         }
         System.out.println("--------------------------------------------");
+        return completedTransfers;
+    }
+
+    public Long promptForTransferDetails(Transfer[] transfers) {
+        Long transactionId = 1L;
+        while (!(transactionId.equals(0L))) {
+            transactionId = promptForLong("Please enter transfer ID to view details (0 to cancel): ");
+            if ((transactionId.equals(0L))) {
+                return 0L;
+            }
+            printTransactionDetails(transactionId);
+            pause();
+            System.out.println();
+        }
+        return 0L;
     }
 
     public Transfer[] printPendingTransfers() {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] pendingTransfers = response.getBody();
+        System.out.println("----------------------------------------------------");
+        System.out.printf("%-12s%-32s%-24s\n","ID","From","Amount");
+        System.out.println("----------------------------------------------------");
+        for (Transfer transfer : pendingTransfers) {
+            System.out.printf("%-12s%-32s%-24s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(), "$"+transfer.getAmount());
+        }
+        System.out.println("----------------------------------------------------");
         return pendingTransfers;
     }
+
+    public Long handleRequestApproval(Transfer[] transfers, AccountService accountService) {
+        Long userInput = promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
+        if (userInput.equals(0L)) {
+            return userInput;
+        }
+        Transfer selectedTransfer = null;
+        for (Transfer transfer : transfers) {
+            if (userInput.equals(transfer.getTransferId())) {
+                selectedTransfer = transfer;
+            }
+        }
+        if (selectedTransfer == null) {
+            System.err.println("Transfer ID not valid, please re-enter.");
+            return 1L;
+        }
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't approve or reject");
+        System.out.println("-----------");
+        int menuSelection = promptForInt("Please choose an option: ");
+        switch (menuSelection) {
+            case 1:
+                selectedTransfer.setStatus(TransferStatus.APPROVED);
+                if (accountService.sendTransfer(selectedTransfer)) {
+                    System.out.println("Transfer approved.");
+                    System.out.println();
+                }
+                break;
+            case 2:
+                selectedTransfer.setStatus(TransferStatus.REJECTED);
+                if (accountService.sendTransfer(selectedTransfer)) {
+                    System.out.println("Transfer rejected.");
+                    System.out.println();
+                }
+                break;
+            case 0:
+                return 1L;
+        }
+        return 1L;
+    }
+
 
     public void printTransactionDetails(Long transactionId) {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
@@ -107,6 +176,7 @@ public class ConsoleService {
         System.out.println("Type: " + transfer.getType());
         System.out.println("Status: " + transfer.getStatus());
         System.out.println("Amount: " + transfer.getAmount());
+        System.out.println("--------------------------------------------");
     }
 
     public UserCredentials promptForCredentials() {

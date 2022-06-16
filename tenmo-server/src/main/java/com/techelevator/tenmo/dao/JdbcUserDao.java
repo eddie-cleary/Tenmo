@@ -56,14 +56,12 @@ public class JdbcUserDao implements UserDao {
     }
 
     public User findUserByAccountId(Long id) {
-        System.out.println("in jdbc");
         String sql = "" +
                 "SELECT tenmo_user.user_id, username, password_hash FROM tenmo_user " +
                 "JOIN account ON account.user_id = tenmo_user.user_id " +
                 "WHERE account.account_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
         while (results.next()) {
-            System.out.println("in results");
             User user;
             user = mapRowToUser(results);
             return user;
