@@ -147,7 +147,7 @@ public class JdbcTransferDao implements TransferDao {
         return pendingTransfers;
     }
 
-    public Transfer mapRowToTransfer(SqlRowSet results){
+    private Transfer mapRowToTransfer(SqlRowSet results){
         Transfer transfer = new Transfer();
         transfer.setTransferId(results.getLong("transfer_id"));
         for (TransferType type : TransferType.values()) {
@@ -168,7 +168,7 @@ public class JdbcTransferDao implements TransferDao {
         return transfer;
     }
 
-    public TransferDTO mapRowToTransferDTO(SqlRowSet results) {
+    private TransferDTO mapRowToTransferDTO(SqlRowSet results) {
         TransferDTO transfer = new TransferDTO();
         transfer.setTransferId(results.getLong("transfer_id"));
         // Loop through all transfer types to see if transfer matches, if so set type
