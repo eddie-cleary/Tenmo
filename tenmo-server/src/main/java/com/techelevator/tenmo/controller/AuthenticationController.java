@@ -2,7 +2,6 @@ package com.techelevator.tenmo.controller;
 
 import javax.validation.Valid;
 
-import com.techelevator.tenmo.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +20,6 @@ import com.techelevator.tenmo.dto.RegisterUserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 /**
  * Controller to authenticate users.

@@ -1,7 +1,6 @@
 package com.techelevator.tenmo.service;
 
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

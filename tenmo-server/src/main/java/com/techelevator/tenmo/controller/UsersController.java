@@ -1,7 +1,5 @@
 package com.techelevator.tenmo.controller;
 
-import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
