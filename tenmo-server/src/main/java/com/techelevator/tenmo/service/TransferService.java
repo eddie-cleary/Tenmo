@@ -3,11 +3,9 @@ package com.techelevator.tenmo.service;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.dto.TransferDTO;
-import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -25,11 +23,6 @@ public class TransferService {
     private UserDao userDao;
     @Autowired
     private TransferDao transferDao;
-
-    public TransferService(UserDao userDao, TransferDao transferDao) {
-        this.userDao = userDao;
-        this.transferDao = transferDao;
-    }
 
     public TransferService() {}
 
