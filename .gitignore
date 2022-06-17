@@ -3,3 +3,4 @@ tenmo-client/m02-capstone-client.iml
 tenmo-client/target
 **/.DS_Store
 /tenmo-client/logs/**
+/tenmo-server/logs/spring.log
