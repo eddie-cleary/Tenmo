@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.exceptions;
 
+import org.jboss.logging.BasicLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

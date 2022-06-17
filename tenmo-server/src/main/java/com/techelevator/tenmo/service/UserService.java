@@ -31,4 +31,11 @@ public class UserService {
     public User findUserByUserId(Long userId) {
         return userDao.findUserByUserId(userId);
     }
+
+    // Returns a user based on account id
+    public User findUserByAccountId(Long accountId) {
+        return userDao.findUserByAccountId(accountId);
+    }
+
+    public Long findAccountIdByUserId(Long userId) { return userDao.findAccountIdByUserId(userId);}
 }

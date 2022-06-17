@@ -13,7 +13,6 @@ public interface UserDao {
 
     Long findIdByUsername(String username);
 
-    // find balance based on user's id
     BigDecimal findBalanceByUserId(Long id);
 
     User findUserByUserId(Long id);

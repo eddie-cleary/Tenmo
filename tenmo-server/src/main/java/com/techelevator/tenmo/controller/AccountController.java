@@ -28,4 +28,14 @@ public class AccountController {
     public BigDecimal getUserBalance(Principal principal) {
         return userService.getUserBalance(principal);
     }
+
+    @GetMapping(path = "/{accountId}")
+    public User getUserByAccountId(@PathVariable Long accountId) {
+        return userService.findUserByAccountId(accountId);
+    }
+
+    @GetMapping(path = "/userid")
+    public Long getAccountIdByUserId(@RequestParam Long id) {
+        return userService.findAccountIdByUserId(id);
+    }
 }
