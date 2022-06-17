@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,13 @@ public class JdbcUserDao implements UserDao {
     private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
     private JdbcTemplate jdbcTemplate;
 
+    private DataSource dataSource;
+
     public JdbcUserDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    public JdbcUserDao(DataSource dataSource) {this.dataSource = dataSource;}
 
     // Returns the user id based on username
     @Override
