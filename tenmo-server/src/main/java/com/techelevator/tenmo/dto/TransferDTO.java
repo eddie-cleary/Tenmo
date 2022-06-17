@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dto;
 
 import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.TransferType;
+import com.techelevator.tenmo.model.User;
 
 import java.math.BigDecimal;
 
@@ -9,9 +10,9 @@ public class TransferDTO {
 
     private Long transferId;
 
-    private UserDTO sender;
+    private User sender;
 
-    private UserDTO receiver;
+    private User receiver;
 
     private TransferStatus status;
 
@@ -29,19 +30,19 @@ public class TransferDTO {
         this.transferId = transferId;
     }
 
-    public UserDTO getSender() {
+    public User getSender() {
         return sender;
     }
 
-    public void setSender(UserDTO sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
 
-    public UserDTO getReceiver() {
+    public User getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(UserDTO receiver) {
+    public void setReceiver(User receiver) {
         this.receiver = receiver;
     }
 

@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.exceptions;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+// Global handler for sending back formatted error messages instead of entire message objects
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,26 +30,31 @@ public class GlobalExceptionHandler {
         return message;
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InsufficientBalanceException.class)
     public String handleInsufficientBalanceException(InsufficientBalanceException ex) {
         return ex.getMessage();
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ResponseStatusException.class)
     public String handleResponseStatusException(ResponseStatusException ex) {
         return ex.getReason();
     }
 
+    @ResponseStatus(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
     @ExceptionHandler(AuthenticationException.class)
     public String handleAuthenticationException(AuthenticationException ex) {
         return ex.getMessage();
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(DataRetrievalFailureException.class)
     public String handleDataRetrievalFailureException(DataRetrievalFailureException ex) {
         return ex.getMessage();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadCredentialsException.class)
     public String handleBadCredentialsException(BadCredentialsException ex) {
         return ex.getMessage();

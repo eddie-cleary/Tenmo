@@ -48,7 +48,7 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
         User user = userDao.findByUsername(loginDto.getUsername());
-        return new LoginResponse(jwt, new UserDTO(user));
+        return new LoginResponse(jwt, user);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,9 +65,9 @@ public class AuthenticationController {
     static class LoginResponse {
 
         private String token;
-        private UserDTO user;
+        private User user;
 
-        LoginResponse(String token, UserDTO user) {
+        LoginResponse(String token, User user) {
             this.token = token;
             this.user = user;
         }
@@ -80,11 +80,11 @@ public class AuthenticationController {
             this.token = token;
         }
 
-		public UserDTO getUser() {
+		public User getUser() {
 			return user;
 		}
 
-		public void setUser(UserDTO user) {
+		public void setUser(User user) {
 			this.user = user;
 		}
     }

@@ -2,6 +2,8 @@ package com.techelevator.tenmo.dto;
 
 import com.techelevator.tenmo.model.User;
 
+// Mostly used to remove the user's password from view when returning User models to the client. Jsonignore was also added as an annotation to password
+// field of the standard User model. Either approach will work for obscuring password
 public class UserDTO {
     private Long id;
     private String username;

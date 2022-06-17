@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.service;
 
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.dto.UserDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,17 @@ public class UserService {
 
     public UserService() {}
 
+    // Return balance based on current logged in user
     public BigDecimal getUserBalance(Principal principal) {
-        // Return balance based on principal's username
         return userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
     }
 
+    // Returns all users in system, will hide password from jsonignore annotation in User model
     public List<User> getAllUsers() {
         return userDao.findAll();
     }
 
+    // Returns a user based on user id
     public User findUserByUserId(Long userId) {
         return userDao.findUserByUserId(userId);
     }

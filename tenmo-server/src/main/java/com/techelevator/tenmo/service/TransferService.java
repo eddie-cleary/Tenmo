@@ -26,6 +26,7 @@ public class TransferService {
 
     public TransferService() {}
 
+    // Allows a logged in user to send a transfer from their account
     public boolean sendTransfer(Transfer transfer, Principal principal) throws InsufficientBalanceException, UserNotFoundException, SQLException {
         // Make sure the sender has sufficient funds
         BigDecimal senderCurrBalance = userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
@@ -37,46 +38,56 @@ public class TransferService {
         if (receiver == null) {
             throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
-        // Generate and add User sender to transfer object, based on the principal. Secure way of making sure logged in user is the sender.
+        // Set sender as the currently logged in user. Only logged in users can send transfers.
         transfer.setSender(userDao.findByUsername(principal.getName()));
         return transferDao.sendTransfer(transfer);
     }
 
+    // Logged in user can request a transfer
     public boolean requestTransfer(Transfer transfer, Principal principal) throws UserNotFoundException {
         User sender = userDao.findUserByUserId(transfer.getSender().getId());
+        // Make sure the transfer was requested from a user that exists
         if (sender == null) {
             throw new UserNotFoundException("User " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
+        // Make sure user does not request a transfer from themselves
         if (sender.getId().equals(userDao.findIdByUsername(principal.getName()))) {
             throw new DataRetrievalFailureException("You cannot request a transfer from yourself.");
         }
+        // The receiver must be the person requesting the transfer, set receiver based on principal
         transfer.setReceiver(userDao.findByUsername(principal.getName()));
         return transferDao.requestTransfer(transfer);
     }
 
-    public boolean rejectTransfer(Transfer transfer, Principal principal) throws UserNotFoundException, SQLException {
+    // Allows a logged in user to reject a transfer requested of them
+    public boolean rejectTransfer(Transfer transfer, Principal principal) throws SQLException {
+        // Make sure the logged in user is the sender, only senders can reject transfers requested from them
         if (principal.getName().equals(transfer.getSender().getUsername())) {
             return transferDao.rejectTransfer(transfer);
         }
-        return false;
+        throw new DataRetrievalFailureException("Only logged in users can reject a transfer.");
     }
 
-    public boolean approveTransfer(Transfer transfer, Principal principal) throws UserNotFoundException, SQLException, InsufficientBalanceException {
+    // Allows a logged in user to approve a transfer requested of them
+    public boolean approveTransfer(Transfer transfer, Principal principal) throws SQLException {
+        // Make sure the logged in user is the sender, only senders can approve transfers requested from them
         if (principal.getName().equals(transfer.getSender().getUsername())) {
             return transferDao.approveTransfer(transfer);
-        } else {
-            throw new DataRetrievalFailureException("Only logged in users can approve a transfer.");
         }
+        throw new DataRetrievalFailureException("Only logged in users can approve a transfer.");
     }
 
+    // Returns a list of all transfers that have been completed for the logged in user
     public List<TransferDTO> getCompletedTransfers(Principal principal) {
         return transferDao.getCompletedTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 
+    // Returns a list of all transfers that are pending approval/reject of the logged in user
     public List<TransferDTO> getPendingTransfers(Principal principal) {
         return transferDao.getPendingTransfers(userDao.findAccountIdByUserId(userDao.findIdByUsername(principal.getName())));
     }
 
+    // Returns a TransferDTO based on the transfer id
     public TransferDTO getTransferById(Long id) {
         return transferDao.getTransferById(id);
     }

@@ -100,12 +100,11 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public boolean rejectTransfer(Transfer transfer) throws SQLException {
+    public boolean rejectTransfer(Transfer transfer) {
         String sql = "" +
                 "UPDATE transfer " +
                 "SET transfer_status_id = '3' " +
                 "WHERE transfer_id = ?;";
-
         try {
             jdbcTemplate.update(sql, transfer.getTransferId());
             return true;
@@ -172,8 +171,8 @@ public class JdbcTransferDao implements TransferDao {
                 break;
             }
         }
-        transfer.setSender(new UserDTO(userDao.findUserByAccountId(results.getLong("account_from"))));
-        transfer.setReceiver(new UserDTO(userDao.findUserByAccountId(results.getLong("account_to"))));
+        transfer.setSender(userDao.findUserByAccountId(results.getLong("account_from")));
+        transfer.setReceiver(userDao.findUserByAccountId(results.getLong("account_to")));
         transfer.setAmount(results.getBigDecimal("amount"));
         return transfer;
     }
