@@ -103,10 +103,12 @@ public class App {
         Long transactionId = 1L;
         while (!(transactionId.equals(0L))) {
             Transfer[] completedTransfers = consoleService.printCompletedTransfers();
-            if (completedTransfers != null) {
-                transactionId = consoleService.promptForTransferDetails(completedTransfers);
+            if (completedTransfers == null) {
+                break;
             }
+            transactionId = consoleService.promptForTransferDetails(completedTransfers);
         }
+        return;
     }
 
 	private void viewPendingRequests() {
@@ -114,8 +116,8 @@ public class App {
         Long userInput = 1L;
         while (!(userInput.equals(0L))) {
             Transfer[] pendingTransfers = consoleService.printPendingTransfers();
-            if (pendingTransfers.length == 0) {
-                System.out.println("You have no pending requests.");
+            if (pendingTransfers == null) {
+                System.err.println("You have no pending requests.");
                 break;
             }
             userInput = consoleService.handleRequestApproval(pendingTransfers, accountService);

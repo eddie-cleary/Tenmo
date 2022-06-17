@@ -78,8 +78,8 @@ public class ConsoleService {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] completedTransfers = response.getBody();
-        if (completedTransfers.length == 0) {
-            System.out.println("You have no completed transfers.");
+        if (completedTransfers == null) {
+            System.err.println("You have no completed transfers.");
             System.out.println();
             return null;
         }
@@ -112,6 +112,9 @@ public class ConsoleService {
         HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
         ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
         Transfer[] pendingTransfers = response.getBody();
+        if (pendingTransfers == null) {
+            return null;
+        }
         System.out.println("----------------------------------------------------");
         System.out.printf("%-12s%-32s%-24s\n","ID","From","Amount");
         System.out.println("----------------------------------------------------");
@@ -148,6 +151,8 @@ public class ConsoleService {
                 if (accountService.sendTransfer(selectedTransfer)) {
                     System.out.println("Transfer approved.");
                     System.out.println();
+                } else {
+                    System.err.println("Error approving transfer.");
                 }
                 break;
             case 2:
@@ -155,6 +160,8 @@ public class ConsoleService {
                 if (accountService.sendTransfer(selectedTransfer)) {
                     System.out.println("Transfer rejected.");
                     System.out.println();
+                } else {
+                    System.err.println("Error rejecting transfer.");
                 }
                 break;
             case 0:
