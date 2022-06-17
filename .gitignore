@@ -4,3 +4,4 @@ tenmo-client/target
 **/.DS_Store
 /tenmo-client/logs/**
 /tenmo-server/logs/spring.log
+/tenmo-server/logs/spring.log*
