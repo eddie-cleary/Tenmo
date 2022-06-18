@@ -66,7 +66,7 @@ public class TransferController {
     public TransferDTO getTransferById(@PathVariable Long id, Principal principal) {
         User receiver = transferService.getTransferById(id).getReceiver();
         User sender = transferService.getTransferById(id).getSender();
-        User loggedInUser = userDao.findByUsername(principal.getName());
+        User loggedInUser = userDao.findUserByUsername(principal.getName());
         // Make sure logged in user is either the sender or receiver in order to access the transfer.
         if (loggedInUser.getId().equals(receiver.getId()) || loggedInUser.getId().equals(sender.getId())) {
             return transferService.getTransferById(id);

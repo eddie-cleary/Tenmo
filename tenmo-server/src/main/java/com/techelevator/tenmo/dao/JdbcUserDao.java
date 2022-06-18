@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +18,14 @@ import java.util.List;
 public class JdbcUserDao implements UserDao {
 
     private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
+    @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private DataSource dataSource;
 
     public JdbcUserDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public JdbcUserDao(DataSource dataSource) {this.dataSource = dataSource;}
+    public JdbcUserDao(){}
 
     // Returns the user id based on username
     @Override
@@ -94,7 +93,7 @@ public class JdbcUserDao implements UserDao {
 
     // Retrieve user object based on username
     @Override
-    public User findByUsername(String username) throws UsernameNotFoundException {
+    public User findUserByUsername(String username) throws UsernameNotFoundException {
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE username ILIKE ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
         if (rowSet.next()){
@@ -119,13 +118,15 @@ public class JdbcUserDao implements UserDao {
     public boolean create(String username, String password) {
 
         // create user
-        String sql = "INSERT INTO tenmo_user (username, password_hash) VALUES (?, ?) RETURNING user_id";
+        String sql = "INSERT INTO tenmo_user (username, password_hash) VALUES (?, ?);";
         String password_hash = new BCryptPasswordEncoder().encode(password);
-        Integer newUserId;
+        Long newUserId;
         try {
-            newUserId = jdbcTemplate.queryForObject(sql, Integer.class, username, password_hash);
+            jdbcTemplate.update(sql, username, password_hash);
+            newUserId = findIdByUsername(username);
+//            newUserId = jdbcTemplate.queryForObject(sql, Integer.class, username, password_hash);
         } catch (DataAccessException e) {
-            throw new DataRetrievalFailureException("Error adding new user to database.");
+            throw new DataRetrievalFailureException("Error adding new user to database. " + e.getMessage());
         }
 
         // create account

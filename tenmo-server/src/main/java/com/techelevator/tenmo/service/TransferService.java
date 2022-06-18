@@ -39,7 +39,7 @@ public class TransferService {
             throw new UserNotFoundException("Receiving user with id of " + transfer.getReceiver().getId() + " does not exist. Please try again.");
         }
         // Set sender as the currently logged in user. Only logged in users can send transfers.
-        transfer.setSender(userDao.findByUsername(principal.getName()));
+        transfer.setSender(userDao.findUserByUsername(principal.getName()));
         return transferDao.sendTransfer(transfer);
     }
 
@@ -55,7 +55,7 @@ public class TransferService {
             throw new DataRetrievalFailureException("You cannot request a transfer from yourself.");
         }
         // The receiver must be the person requesting the transfer, set receiver based on principal
-        transfer.setReceiver(userDao.findByUsername(principal.getName()));
+        transfer.setReceiver(userDao.findUserByUsername(principal.getName()));
         return transferDao.requestTransfer(transfer);
     }
 

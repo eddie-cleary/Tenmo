@@ -45,7 +45,7 @@ public class AuthenticationController {
         authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
-        User user = userDao.findByUsername(loginDto.getUsername());
+        User user = userDao.findUserByUsername(loginDto.getUsername());
         return new LoginResponse(jwt, user);
     }
 
