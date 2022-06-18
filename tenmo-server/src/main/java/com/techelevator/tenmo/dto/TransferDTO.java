@@ -69,4 +69,17 @@ public class TransferDTO {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransferDTO transferDTO = (TransferDTO) o;
+        return transferId.equals(transferDTO.getTransferId()) &&
+                sender.equals(transferDTO.getSender()) &&
+                receiver.equals(transferDTO.getReceiver()) &&
+                status.equals(transferDTO.getStatus()) &&
+                type.equals(transferDTO.getType()) &&
+                amount.equals(transferDTO.getAmount());
+    }
 }

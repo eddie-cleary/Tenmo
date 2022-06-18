@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.dto.TransferDTO;
 import com.techelevator.tenmo.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,10 +17,11 @@ public class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     private UserDao userDao;
 
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate, JdbcUserDao userDao) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, UserDao userDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.userDao = userDao;
     }
