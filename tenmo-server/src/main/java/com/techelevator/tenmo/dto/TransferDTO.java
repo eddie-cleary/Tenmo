@@ -75,6 +75,9 @@ public class TransferDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TransferDTO transferDTO = (TransferDTO) o;
+
+        System.out.println(type + " " + transferDTO.getType());
+
         return transferId.equals(transferDTO.getTransferId()) &&
                 sender.equals(transferDTO.getSender()) &&
                 receiver.equals(transferDTO.getReceiver()) &&

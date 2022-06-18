@@ -163,8 +163,8 @@ public class App {
 
     private Transfer gatherRequestTransferInfo() {
         consoleService.printAllUsers();
-        Long receiverId = consoleService.promptForUserId("Enter ID of user you are requesting from (0 to cancel): ");
-        if (!validateReceiver(receiverId)) {
+        Long senderId = consoleService.promptForUserId("Enter ID of user you are requesting from (0 to cancel): ");
+        if (!validateReceiver(senderId)) {
             return null;
         }
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to request: ");
@@ -172,7 +172,7 @@ public class App {
             return null;
         }
         Transfer newTransfer = new Transfer();
-        newTransfer.setSender(accountService.getUserByUserId(receiverId));
+        newTransfer.setSender(accountService.getUserByUserId(senderId));
         newTransfer.setAmount(amount);
         newTransfer.setType(TransferType.REQUEST);
         newTransfer.setStatus(TransferStatus.PENDING);

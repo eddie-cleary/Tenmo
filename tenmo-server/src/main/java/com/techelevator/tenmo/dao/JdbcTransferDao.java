@@ -27,15 +27,26 @@ public class JdbcTransferDao implements TransferDao {
     }
 
 
-    // Retrieve a transfer based on transfer id
+    // Retrieve a TransferDTO based on transfer id
     @Override
-    public TransferDTO getTransferById(Long id) {
+    public TransferDTO getTransferDTOById(Long id) {
         String sql = "SELECT * FROM transfer WHERE transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
         if (results.next() == false) {
             throw new DataRetrievalFailureException("No transfers found with id " + id);
         }
         return mapRowToTransferDTO(results);
+    }
+
+    // Retrieve a Transfer based on transfer id
+    @Override
+    public Transfer getTransferById(Long id) {
+        String sql = "SELECT * FROM transfer WHERE transfer_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        if (results.next() == false) {
+            throw new DataRetrievalFailureException("No transfers found with id " + id);
+        }
+        return mapRowToTransfer(results);
     }
 
     // Creates a transfer in database
@@ -45,7 +56,7 @@ public class JdbcTransferDao implements TransferDao {
                 "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                 "VALUES (?, ?, ?, ?, ?)";
         try {
-            jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount());
+            jdbcTemplate.update(sql, transfer.getType().getTypeId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount());
             return true;
         } catch (DataAccessException ex) {
             throw new DataRetrievalFailureException("Error creating transfer.");
@@ -70,7 +81,7 @@ public class JdbcTransferDao implements TransferDao {
                 "WHERE user_id = ?;";
 
         try {
-            jdbcTemplate.update(sql, transfer.getType().getTransferId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount(),
+            jdbcTemplate.update(sql, transfer.getType().getTypeId(), transfer.getStatus().getStatusId(), userDao.findAccountIdByUserId(transfer.getSender().getId()), userDao.findAccountIdByUserId(transfer.getReceiver().getId()), transfer.getAmount(),
                     transfer.getAmount(), transfer.getReceiver().getId(), transfer.getAmount(), transfer.getSender().getId());
             return true;
         } catch (DataAccessException ex) {
@@ -153,7 +164,7 @@ public class JdbcTransferDao implements TransferDao {
         Transfer transfer = new Transfer();
         transfer.setTransferId(results.getLong("transfer_id"));
         for (TransferType type : TransferType.values()) {
-            if (results.getInt("transfer_type_id") == type.getTransferId()) {
+            if (results.getInt("transfer_type_id") == type.getTypeId()) {
                 transfer.setType(type);
                 break;
             }
@@ -175,7 +186,7 @@ public class JdbcTransferDao implements TransferDao {
         transfer.setTransferId(results.getLong("transfer_id"));
         // Loop through all transfer types to see if transfer matches, if so set type
         for (TransferType type : TransferType.values()) {
-            if (results.getInt("transfer_type_id") == type.getTransferId()) {
+            if (results.getInt("transfer_type_id") == type.getTypeId()) {
                 transfer.setType(type);
                 break;
             }

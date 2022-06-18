@@ -3,17 +3,17 @@ package com.techelevator.tenmo.model;
 public enum TransferType {
     REQUEST(1), SEND(2);
 
-    int transferId;
+    int typeId;
 
-    TransferType(int transferId) {
-        this.transferId = transferId;
+    TransferType(int typeId) {
+        this.typeId = typeId;
     }
 
-    public int getTransferId() {
-        return transferId;
+    public int getTypeId() {
+        return typeId;
     }
 
-    public void setTransferId(int transferId) {
-        this.transferId = transferId;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 }

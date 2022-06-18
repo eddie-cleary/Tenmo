@@ -88,8 +88,8 @@ public class TransferService {
     }
 
     // Returns a TransferDTO based on the transfer id
-    public TransferDTO getTransferById(Long id) {
-        return transferDao.getTransferById(id);
+    public TransferDTO getTransferDTOById(Long id) {
+        return transferDao.getTransferDTOById(id);
     }
 }
 

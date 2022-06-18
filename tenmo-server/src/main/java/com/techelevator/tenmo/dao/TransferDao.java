@@ -19,5 +19,7 @@ public interface TransferDao {
 
     List<TransferDTO> getPendingTransfers(Long id);
 
-    TransferDTO getTransferById(Long id);
+    TransferDTO getTransferDTOById(Long id);
+
+    Transfer getTransferById(Long id);
 }

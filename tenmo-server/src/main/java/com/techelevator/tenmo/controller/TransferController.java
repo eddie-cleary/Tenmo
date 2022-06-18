@@ -64,12 +64,12 @@ public class TransferController {
     // Logged in user can access a transfer if they are the receiver or sender only
     @GetMapping(path = "/{id}")
     public TransferDTO getTransferById(@PathVariable Long id, Principal principal) {
-        User receiver = transferService.getTransferById(id).getReceiver();
-        User sender = transferService.getTransferById(id).getSender();
+        User receiver = transferService.getTransferDTOById(id).getReceiver();
+        User sender = transferService.getTransferDTOById(id).getSender();
         User loggedInUser = userDao.findUserByUsername(principal.getName());
         // Make sure logged in user is either the sender or receiver in order to access the transfer.
         if (loggedInUser.getId().equals(receiver.getId()) || loggedInUser.getId().equals(sender.getId())) {
-            return transferService.getTransferById(id);
+            return transferService.getTransferDTOById(id);
         }
         throw new DataRetrievalFailureException("Failure accessing transfer.");
     }
