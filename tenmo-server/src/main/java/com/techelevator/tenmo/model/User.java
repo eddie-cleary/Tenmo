@@ -17,11 +17,12 @@ public class User {
 
    public User() { }
 
-   public User(Long id, String username, String password, String authorities) {
+   public User(Long id, String username, String password, Set<Authority> authorities) {
       this.id = id;
       this.username = username;
       this.password = password;
       this.activated = true;
+      this.authorities = authorities;
    }
 
    public Long getId() {
@@ -76,11 +77,11 @@ public class User {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       User user = (User) o;
-      return id == user.id &&
+      return id.equals(user.getId()) &&
+              username.equals(user.getUsername()) &&
+              password.equals(user.getPassword()) &&
               activated == user.activated &&
-              Objects.equals(username, user.username) &&
-              Objects.equals(password, user.password) &&
-              Objects.equals(authorities, user.authorities);
+              authorities.equals(user.getAuthorities());
    }
 
    @Override

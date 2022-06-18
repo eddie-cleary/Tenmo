@@ -1,5 +1,6 @@
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.model.Authority;
 import com.techelevator.tenmo.model.User;
 import org.junit.After;
 import org.junit.Assert;
@@ -12,8 +13,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class UserDaoTests {
     private UserDao sut;
@@ -40,21 +43,43 @@ public class UserDaoTests {
     @Test
     public void findAll_returns_all_users() {
         // Arrange
-        List<User> allUsers = sut.findAll();
+        int expected = 2;
 
         // Act
-        int size = allUsers.size();
+        List<User> allUsers = sut.findAll();
+        int actual = allUsers.size();
 
         // Assert
-        Assert.assertEquals(2, size);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void find_by_username_returns_correct_long() {
+    public void findIdByUsername_returns_correct_long() {
+        // Arrange
+        Long expected = 1001L;
+
         // Arrange & Act
-        Long testLong = sut.findIdByUsername("test");
+        Long actual = sut.findIdByUsername("test");
 
         // Assert
-        Assert.assertEquals(Long.valueOf(1001), testLong);
+        Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void findUserByUserId() {
+        // Arrange
+        User expected = new User();
+        expected.setId(1001L);
+        expected.setUsername("test");
+        expected.setPassword("$2a$10$xEMjLs3HZArjtiqF2P2Ks.PN7FA0T/AjYtBOyP7dQiqtPlZBFtosO");
+        expected.setActivated(true);
+        expected.getAuthorities().add(new Authority("ROLE_USER"));
+
+        // Act
+        User actual = sut.findUserByUserId(1001L);
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+    }
+
 }
