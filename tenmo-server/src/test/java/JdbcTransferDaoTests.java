@@ -209,4 +209,25 @@ public class JdbcTransferDaoTests {
         Assert.assertEquals(expectedAllApprovedStatus, actualAllApprovedStatus);
     }
 
+    @Test
+    public void getPendingTransfers_returns_correct_size_all_pending() {
+        // Arrange
+        int expected = 1;
+        boolean expectedAllPendingStatus = true;
+
+        // Act
+        List<TransferDTO> pendingTransfers = sut.getPendingTransfers(2001L);
+        int actual = pendingTransfers.size();
+        boolean actualAllPendingStatus = true;
+        for (TransferDTO transfer : pendingTransfers) {
+            if (!(transfer.getStatus().equals(TransferStatus.PENDING))) {
+                actualAllPendingStatus = false;
+            }
+        }
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expectedAllPendingStatus, actualAllPendingStatus);
+    }
+
 }
