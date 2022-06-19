@@ -11,4 +11,10 @@ INSERT INTO account(user_id, balance)
 VALUES (1002L, 1000.00);
 
 INSERT INTO transfer(transfer_type_id, transfer_status_id, account_from, account_to, amount)
-VALUES (2, 2, 2001, 2002, 50.00)
+VALUES (2, 2, 2001, 2002, 50.00);
+
+INSERT INTO transfer(transfer_type_id, transfer_status_id, account_from, account_to, amount)
+VALUES (1, 1, 2001, 2002, 50.00);
+
+INSERT INTO transfer(transfer_type_id, transfer_status_id, account_from, account_to, amount)
+VALUES (1, 3, 2001, 2002, 50.00);

@@ -8,7 +8,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -16,7 +15,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.List;
 
 public class JdbcTransferDaoTests {
     private TransferDao sut;
@@ -24,6 +22,11 @@ public class JdbcTransferDaoTests {
     private UserDao userDao;
 
     private EmbeddedDatabase mockDataSource;
+
+    // ID that is used to indicate the next available id after the mock data is added. This can be updated if more mock
+    // transfers are added. This ensures each test is always working with the latest transfer the test specifically added
+    // and not mock data from sql file.
+    private final Long NEXT_TRANSFER_ID = 3004L;
 
     @Before
     public void setupMockDatabase() {
@@ -62,11 +65,11 @@ public class JdbcTransferDaoTests {
     }
 
     @Test
-    public void requestTransfer_gets_added_correctly() {
+    public void requestTransfer_gets_added_correctly() throws SQLException {
         // Arrange
         boolean expected = true;
         TransferDTO expectedTransfer = new TransferDTO();
-        expectedTransfer.setTransferId(3002L);
+        expectedTransfer.setTransferId(NEXT_TRANSFER_ID);
         expectedTransfer.setType(TransferType.REQUEST);
         expectedTransfer.setStatus(TransferStatus.PENDING);
         expectedTransfer.setSender(userDao.findUserByUsername("test"));
@@ -82,7 +85,7 @@ public class JdbcTransferDaoTests {
         requestedTransfer.setAmount(new BigDecimal("50.00"));
 
         boolean actual = sut.requestTransfer(requestedTransfer);
-        TransferDTO actualTransfer = sut.getTransferDTOById(3002L);
+        TransferDTO actualTransfer = sut.getTransferDTOById(NEXT_TRANSFER_ID);
 
         // Assert
         Assert.assertEquals(expected, actual);
@@ -94,7 +97,7 @@ public class JdbcTransferDaoTests {
         // Arrange
         boolean expected = true;
         TransferDTO expectedTransfer = new TransferDTO();
-        expectedTransfer.setTransferId(3001L);
+        expectedTransfer.setTransferId(NEXT_TRANSFER_ID);
         expectedTransfer.setType(TransferType.SEND);
         expectedTransfer.setStatus(TransferStatus.APPROVED);
         expectedTransfer.setSender(userDao.findUserByUsername("test"));
@@ -111,7 +114,7 @@ public class JdbcTransferDaoTests {
         transferToSend.setReceiver(userDao.findUserByUsername("trial"));
         transferToSend.setAmount(new BigDecimal("50.00"));
         boolean actual = sut.sendTransfer(transferToSend);
-        TransferDTO actualTransfer = sut.getTransferDTOById(3001L);
+        TransferDTO actualTransfer = sut.getTransferDTOById(NEXT_TRANSFER_ID);
         BigDecimal actualSenderBalance = userDao.findBalanceByUserId(1001L);
         BigDecimal actualReceiverBalance = userDao.findBalanceByUserId(1002L);
 
@@ -127,7 +130,7 @@ public class JdbcTransferDaoTests {
         // Arrange
         boolean expected = true;
         TransferDTO expectedTransfer = new TransferDTO();
-        expectedTransfer.setTransferId(3002L);
+        expectedTransfer.setTransferId(NEXT_TRANSFER_ID);
         expectedTransfer.setType(TransferType.REQUEST);
         expectedTransfer.setStatus(TransferStatus.APPROVED);
         expectedTransfer.setSender(userDao.findUserByUsername("test"));
@@ -144,9 +147,9 @@ public class JdbcTransferDaoTests {
         requestedTransfer.setReceiver(userDao.findUserByUsername("trial"));
         requestedTransfer.setAmount(new BigDecimal("50.00"));
         sut.requestTransfer(requestedTransfer);
-        Transfer transferToApprove = sut.getTransferById(3002L);
+        Transfer transferToApprove = sut.getTransferById(NEXT_TRANSFER_ID);
         boolean actual = sut.approveTransfer(transferToApprove);
-        TransferDTO actualTransfer = sut.getTransferDTOById(3002L);
+        TransferDTO actualTransfer = sut.getTransferDTOById(NEXT_TRANSFER_ID);
         BigDecimal actualSenderBalance = userDao.findBalanceByUserId(1001L);
         BigDecimal actualReceiverBalance = userDao.findBalanceByUserId(1002L);
 
@@ -156,4 +159,37 @@ public class JdbcTransferDaoTests {
         Assert.assertEquals(expectedSenderBalance, actualSenderBalance);
         Assert.assertEquals(expectedReceiverBalance, actualReceiverBalance);
     }
+
+    @Test
+    public void rejectTransfer_updates_status_to_rejected() throws SQLException {
+        // Arrange
+        TransferDTO expected = new TransferDTO();
+        expected.setTransferId(NEXT_TRANSFER_ID);
+        expected.setStatus(TransferStatus.REJECTED);
+        expected.setType(TransferType.REQUEST);
+        expected.setAmount(new BigDecimal("50.00"));
+        expected.setSender(userDao.findUserByUsername("test"));
+        expected.setReceiver(userDao.findUserByUsername("trial"));
+
+        // Act
+        Transfer transferToReject = new Transfer();
+        transferToReject.setTransferId(NEXT_TRANSFER_ID);
+        transferToReject.setStatus(TransferStatus.PENDING);
+        transferToReject.setType(TransferType.REQUEST);
+        transferToReject.setAmount(new BigDecimal("50.00"));
+        transferToReject.setSender(userDao.findUserByUsername("test"));
+        transferToReject.setReceiver(userDao.findUserByUsername("trial"));
+        sut.requestTransfer(transferToReject);
+        sut.rejectTransfer(transferToReject);
+        TransferDTO actual = sut.getTransferDTOById(NEXT_TRANSFER_ID);
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getCompletedTransfers_returns_correct_size_all_approved() {
+
+    }
+
 }

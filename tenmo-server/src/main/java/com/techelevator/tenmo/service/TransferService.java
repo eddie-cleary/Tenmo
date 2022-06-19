@@ -44,7 +44,7 @@ public class TransferService {
     }
 
     // Logged in user can request a transfer
-    public boolean requestTransfer(Transfer transfer, Principal principal) throws UserNotFoundException {
+    public boolean requestTransfer(Transfer transfer, Principal principal) throws UserNotFoundException, SQLException {
         User sender = userDao.findUserByUserId(transfer.getSender().getId());
         // Make sure the transfer was requested from a user that exists
         if (sender == null) {
