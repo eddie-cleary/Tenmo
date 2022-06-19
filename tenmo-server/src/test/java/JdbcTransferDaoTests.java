@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 
 public class JdbcTransferDaoTests {
     private TransferDao sut;
@@ -26,7 +27,7 @@ public class JdbcTransferDaoTests {
     // ID that is used to indicate the next available id after the mock data is added. This can be updated if more mock
     // transfers are added. This ensures each test is always working with the latest transfer the test specifically added
     // and not mock data from sql file.
-    private final Long NEXT_TRANSFER_ID = 3004L;
+    private final Long NEXT_TRANSFER_ID = 3005L;
 
     @Before
     public void setupMockDatabase() {
@@ -189,7 +190,23 @@ public class JdbcTransferDaoTests {
 
     @Test
     public void getCompletedTransfers_returns_correct_size_all_approved() {
+        // Arrange
+        int expected = 2;
+        boolean expectedAllApprovedStatus = true;
 
+        // Act
+        List<TransferDTO> completedTransfers = sut.getCompletedTransfers(2001L);
+        int actual = completedTransfers.size();
+        boolean actualAllApprovedStatus = true;
+        for (TransferDTO transfer : completedTransfers) {
+            if (!(transfer.getStatus().equals(TransferStatus.APPROVED))) {
+                actualAllApprovedStatus = false;
+            }
+        }
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expectedAllApprovedStatus, actualAllApprovedStatus);
     }
 
 }
