@@ -103,4 +103,22 @@ public class TransferServiceTests {
         exception.expect(InsufficientBalanceException.class);
         sut.sendTransfer(transferToSend, principal);
     }
+
+    @Test
+    public void requestTransfer_sends_successful_request() throws UserNotFoundException, SQLException {
+        // Arrange
+        boolean expected = true;
+        Transfer transferToRequest = new Transfer();
+        transferToRequest.setStatus(TransferStatus.PENDING);
+        transferToRequest.setType(TransferType.REQUEST);
+        transferToRequest.setSender(userDao.findUserByUsername("trial"));
+        transferToRequest.setReceiver(userDao.findUserByUsername("test"));
+        transferToRequest.setAmount(new BigDecimal("50.00"));
+
+        // Act
+        boolean actual = sut.requestTransfer(transferToRequest, principal);
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+    }
 }
