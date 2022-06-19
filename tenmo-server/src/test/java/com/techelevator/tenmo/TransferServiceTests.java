@@ -137,4 +137,18 @@ public class TransferServiceTests {
         exception.expect(DataRetrievalFailureException.class);
         sut.requestTransfer(transferToRequest, principal);
     }
+
+    @Test
+    public void rejectTransfer_returns_true() throws SQLException {
+        // Arrange
+        boolean expected = true;
+
+        // Act
+        boolean actual = sut.rejectTransfer(transferDao.getTransferById(3003L), principal);
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+    }
+
+    
 }
