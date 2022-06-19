@@ -1,14 +1,11 @@
 package com.techelevator.tenmo.services;
 
 
-import com.techelevator.tenmo.App;
 import com.techelevator.tenmo.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -66,15 +63,13 @@ public class ConsoleService {
 
     // Shows a list of all users and their ids in the database
     public void printAllUsers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, entity, User[].class);
-        User[] users = response.getBody();
-        System.out.println("-------------------------------------------");
+        User[] users = accountService.getAllUsers();
+        System.out.println("\n-------------------------------------------");
         System.out.println("Users");
-        System.out.println("ID\tName");
+        System.out.printf("%-18s%-18s\n","ID","Name");
         System.out.println("-------------------------------------------");
         for (User user : users) {
-            System.out.println(user.getId()+"\t"+user.getUsername());
+            System.out.printf("%-18s%-18s\n",user.getId(),user.getUsername());
         }
         System.out.println("-------------------------------------------");
     }
@@ -82,11 +77,10 @@ public class ConsoleService {
     public void printCompletedTransfers() {
         Transfer[] completedTransfers = accountService.getCompletedTransfers();
         if (completedTransfers == null) {
-            System.err.println("You have no completed transfers.");
-            System.out.println();
+            System.out.println("\nYou have no transfer history.");
             return;
         }
-        System.out.println("--------------------------------------------");
+        System.out.println("\n--------------------------------------------");
         System.out.printf("%-18s%-18s%-18s\n","ID","From/To","Amount");
         System.out.println("--------------------------------------------");
         for (Transfer transfer : completedTransfers) {
@@ -110,12 +104,33 @@ public class ConsoleService {
         return 0L;
     }
 
-    public Transfer[] printPendingTransfers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
-        Transfer[] pendingTransfers = response.getBody();
-        if (pendingTransfers == null) {
+    public Transfer promptForSendTransfer() {
+        User[] allUsers = accountService.getAllUsers();
+        Transfer transfer = new Transfer();
+        Long transferId = promptForLong("\nEnter ID of user you are sending to (0 to cancel): ");
+        User selectedUser = null;
+        for (User user : allUsers) {
+            if (transferId.equals(user.getId())) {
+                selectedUser = user;
+            }
+        }
+        if (selectedUser == null) {
+            System.out.println("User not found. Please try again.");
             return null;
+        }
+        transfer.setSender(currentUser.getUser());
+        transfer.setReceiver(selectedUser);
+        transfer.setStatus(TransferStatus.APPROVED);
+        transfer.setType(TransferType.SEND);
+        transfer.setAmount(promptForBigDecimal("Enter amount: "));
+        return transfer;
+    }
+
+    public void printPendingTransfers() {
+        Transfer[] pendingTransfers = accountService.getPendingTransfers();
+        if (pendingTransfers == null) {
+            System.out.println("\nThere are no pending requests.");
+            return;
         }
         System.out.println("----------------------------------------------------");
         System.out.printf("%-12s%-32s%-24s\n","ID","From","Amount");
@@ -124,52 +139,51 @@ public class ConsoleService {
             System.out.printf("%-12s%-32s%-24s\n",transfer.getTransferId(), "From: " + transfer.getReceiver().getUsername(), "$"+transfer.getAmount());
         }
         System.out.println("----------------------------------------------------");
-        return pendingTransfers;
+        handleRequestApproval(pendingTransfers);
     }
 
-    public Long handleRequestApproval(Transfer[] transfers, AccountService accountService) {
-        Long userInput = promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
+    public void handleRequestApproval(Transfer[] transfers) {
+        Long userInput = -1L;
+        userInput = promptForLong("Please enter transfer ID to approve/reject (0 to cancel): ");
         if (userInput.equals(0L)) {
-            return userInput;
-        }
-        Transfer selectedTransfer = null;
-        for (Transfer transfer : transfers) {
-            if (userInput.equals(transfer.getTransferId())) {
-                selectedTransfer = transfer;
+            return;
+        } else {
+            Transfer selectedTransfer = null;
+            for (Transfer transfer : transfers) {
+                if (userInput.equals(transfer.getTransferId())) {
+                    selectedTransfer = transfer;
+                }
+            }
+            if (selectedTransfer == null) {
+                System.err.println("Transfer ID not valid, please re-enter.");
+                return;
+            }
+            System.out.println("1: Approve");
+            System.out.println("2: Reject");
+            System.out.println("0: Don't approve or reject");
+            System.out.println("-----------");
+            int menuSelection = promptForInt("Please choose an option: ");
+            switch (menuSelection) {
+                case 1:
+                    selectedTransfer.setStatus(TransferStatus.APPROVED);
+                    if (accountService.handleSendTransfer(selectedTransfer)) {
+                        System.out.println("Transfer approved.");
+                    } else {
+                        printErrorMessage();
+                    }
+                    break;
+                case 2:
+                    selectedTransfer.setStatus(TransferStatus.REJECTED);
+                    if (accountService.handleSendTransfer(selectedTransfer)) {
+                        System.out.println("Transfer rejected.");
+                    } else {
+                        printErrorMessage();
+                    }
+                    break;
+                case 0:
+                    break;
             }
         }
-        if (selectedTransfer == null) {
-            System.err.println("Transfer ID not valid, please re-enter.");
-            return 1L;
-        }
-        System.out.println("1: Approve");
-        System.out.println("2: Reject");
-        System.out.println("0: Don't approve or reject");
-        System.out.println("-----------");
-        int menuSelection = promptForInt("Please choose an option: ");
-        switch (menuSelection) {
-            case 1:
-                selectedTransfer.setStatus(TransferStatus.APPROVED);
-                if (accountService.sendTransfer(selectedTransfer)) {
-                    System.out.println("Transfer approved.");
-                    System.out.println();
-                } else {
-                    System.err.println("Error approving transfer.");
-                }
-                break;
-            case 2:
-                selectedTransfer.setStatus(TransferStatus.REJECTED);
-                if (accountService.sendTransfer(selectedTransfer)) {
-                    System.out.println("Transfer rejected.");
-                    System.out.println();
-                } else {
-                    System.err.println("Error rejecting transfer.");
-                }
-                break;
-            case 0:
-                return 1L;
-        }
-        return 1L;
     }
 
 
@@ -189,7 +203,7 @@ public class ConsoleService {
     }
 
     public UserCredentials promptForCredentials() {
-        String username = promptForString("Username: ");
+        String username = promptForString("\nUsername: ");
         String password = promptForString("Password: ");
         return new UserCredentials(username, password);
     }
@@ -230,7 +244,7 @@ public class ConsoleService {
         System.out.print(prompt);
         while (true) {
             try {
-                return Long.parseLong(scanner.nextLine());
+                return Long.parseLong(scanner.next());
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a number.");
             }
@@ -257,8 +271,13 @@ public class ConsoleService {
 
 
     public void pause() {
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
+        System.out.print("\nPress Enter to continue...");
+        try {
+            System.in.read();
+        }
+        catch(Exception e){
+
+        }
     }
 
     public void printErrorMessage() {

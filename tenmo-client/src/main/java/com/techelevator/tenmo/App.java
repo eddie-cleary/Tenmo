@@ -6,7 +6,6 @@ import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
 import java.math.BigDecimal;
-import java.util.Scanner;
 
 public class App {
 
@@ -51,10 +50,10 @@ public class App {
     }
 
     private void handleRegister() {
-        System.out.println("Please register a new user account");
+        System.out.println("\nPlease register a new user account");
         UserCredentials credentials = consoleService.promptForCredentials();
         if (authenticationService.register(credentials)) {
-            System.out.println("Registration successful. You can now login.");
+            System.out.println("\nRegistration successful. You can now login.");
         } else {
             consoleService.printErrorMessage();
         }
@@ -98,7 +97,7 @@ public class App {
 
 	private void viewCurrentBalance() {
         // Print out account balance of current logged in user
-        System.out.println("Your current balance is: $" + accountService.getUserBalance());
+        System.out.println("\nYour current balance is: $" + accountService.getUserBalance());
 	}
 
 	private void viewTransferHistory() {
@@ -108,23 +107,16 @@ public class App {
 
 	private void viewPendingRequests() {
 		// Print all pending requests
-        Long userInput = 1L;
-        while (!(userInput.equals(0L))) {
-            Transfer[] pendingTransfers = consoleService.printPendingTransfers();
-            if (pendingTransfers == null) {
-                System.err.println("You have no pending requests.");
-                break;
-            }
-            userInput = consoleService.handleRequestApproval(pendingTransfers, accountService);
-        }
-        return;
-
+        consoleService.printPendingTransfers();
 	}
 
 	private void sendBucks() {
-        Transfer newTransfer = gatherSendTransferInfo();
-        if (accountService.sendTransfer(newTransfer)) {
-            System.out.println("Transfer complete.");
+        consoleService.printAllUsers();
+        Transfer transfer = consoleService.promptForSendTransfer();
+        if (accountService.handleSendTransfer(transfer)){
+            System.out.println("\nSend transfer complete.");
+        } else {
+            consoleService.printErrorMessage();
         }
 	}
 
@@ -133,28 +125,27 @@ public class App {
         if (newTransfer == null) {
             return;
         }
-        if (accountService.sendTransfer(newTransfer)) {
+        if (accountService.handleSendTransfer(newTransfer)) {
             System.out.println("Transfer request complete.");
         }
 	}
 
-    private Transfer gatherSendTransferInfo() {
-        consoleService.printAllUsers();
-        Long receiverId = consoleService.promptForUserId("Enter ID of user you are sending to (0 to cancel): ");
-        if (!validateReceiver(receiverId)) {
-            return null;
-        }
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-        if (!validateAmount(amount)) {
-            return null;
-        }
-        Transfer newTransfer = new Transfer();
-        newTransfer.setReceiver(accountService.getUserByUserId(receiverId));
-        newTransfer.setAmount(amount);
-        newTransfer.setType(TransferType.SEND);
-        newTransfer.setStatus(TransferStatus.APPROVED);
-        return newTransfer;
-    }
+//    private Transfer gatherSendTransferInfo() {
+//
+//        if (!validateReceiver(receiverId)) {
+//            return null;
+//        }
+//        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
+//        if (!validateAmount(amount)) {
+//            return null;
+//        }
+//        Transfer newTransfer = new Transfer();
+//        newTransfer.setReceiver(accountService.getUserByUserId(receiverId));
+//        newTransfer.setAmount(amount);
+//        newTransfer.setType(TransferType.SEND);
+//        newTransfer.setStatus(TransferStatus.APPROVED);
+//        return newTransfer;
+//    }
 
     private Transfer gatherRequestTransferInfo() {
         consoleService.printAllUsers();

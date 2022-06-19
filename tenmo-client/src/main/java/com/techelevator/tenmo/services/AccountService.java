@@ -36,7 +36,7 @@ public class AccountService {
     }
 
     // Method called when user sends money to another user.
-    public boolean sendTransfer(Transfer transfer) {
+    public boolean handleSendTransfer(Transfer transfer) {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, createAuthHeader());
         try {
             return restTemplate.postForObject(baseUrl + "transfer", entity, Boolean.class);
@@ -45,6 +45,13 @@ public class AccountService {
             System.out.println(e.getMessage());
         }
         return false;
+    }
+
+    public User[] getAllUsers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, entity, User[].class);
+        User[] users = response.getBody();
+        return users;
     }
 
     public User getUserByUserId(Long id) {
@@ -66,6 +73,12 @@ public class AccountService {
         return completedTransfers;
     }
 
+    public Transfer[] getPendingTransfers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] pendingTransfers = response.getBody();
+        return pendingTransfers;
+    }
     // Sets headers of the currentUser's jwt
     public HttpHeaders createAuthHeader() {
         HttpHeaders headers = new HttpHeaders();
