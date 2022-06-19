@@ -17,8 +17,6 @@ public class App {
 
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
-    // Instantiate an accountService for handling all account related app functions
-
     private AuthenticatedUser currentUser;
 
     public static void main(String[] args) {
@@ -112,7 +110,7 @@ public class App {
 
 	private void sendBucks() {
         consoleService.printAllUsers();
-        Transfer transfer = consoleService.promptForSendTransfer();
+        Transfer transfer = consoleService.promptForTransferInfo(TransferType.SEND, TransferStatus.APPROVED, "Enter ID of user you are sending to");
         if (accountService.handleSendTransfer(transfer)){
             System.out.println("\nSend transfer complete.");
         } else {
@@ -121,67 +119,13 @@ public class App {
 	}
 
 	private void requestBucks() {
-        Transfer newTransfer = gatherRequestTransferInfo();
+        consoleService.printAllUsers();
+        Transfer newTransfer = consoleService.promptForTransferInfo(TransferType.REQUEST, TransferStatus.PENDING, "Enter ID of user you are requesting from");
         if (newTransfer == null) {
             return;
         }
         if (accountService.handleSendTransfer(newTransfer)) {
-            System.out.println("Transfer request complete.");
+            System.out.println("\nTransfer request complete.");
         }
 	}
-
-//    private Transfer gatherSendTransferInfo() {
-//
-//        if (!validateReceiver(receiverId)) {
-//            return null;
-//        }
-//        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to send: ");
-//        if (!validateAmount(amount)) {
-//            return null;
-//        }
-//        Transfer newTransfer = new Transfer();
-//        newTransfer.setReceiver(accountService.getUserByUserId(receiverId));
-//        newTransfer.setAmount(amount);
-//        newTransfer.setType(TransferType.SEND);
-//        newTransfer.setStatus(TransferStatus.APPROVED);
-//        return newTransfer;
-//    }
-
-    private Transfer gatherRequestTransferInfo() {
-        consoleService.printAllUsers();
-        Long senderId = consoleService.promptForUserId("Enter ID of user you are requesting from (0 to cancel): ");
-        if (!validateReceiver(senderId)) {
-            return null;
-        }
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount to request: ");
-        if (!validateAmount(amount)) {
-            return null;
-        }
-        Transfer newTransfer = new Transfer();
-        newTransfer.setSender(accountService.getUserByUserId(senderId));
-        newTransfer.setAmount(amount);
-        newTransfer.setType(TransferType.REQUEST);
-        newTransfer.setStatus(TransferStatus.PENDING);
-        return newTransfer;
-    }
-
-    private boolean validateReceiver(Long receiverId) {
-        User receiver = accountService.getUserByUserId(receiverId);
-        if (receiverId.equals(0L)) {
-            return false;
-        } else if (currentUser.getUser().getId().equals(receiver.getId())) {
-            System.err.println("You can not send money to yourself. Please try again.");
-            System.out.println();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateAmount(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) > 0) {
-            return true;
-        }
-        System.err.println("Please enter an amount greater than $0.00");
-        return false;
-    }
 }

@@ -2,7 +2,6 @@ package com.techelevator.tenmo.services;
 
 
 import com.techelevator.tenmo.model.*;
-import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -34,6 +33,85 @@ public class ConsoleService {
             menuSelection = -1;
         }
         return menuSelection;
+    }
+
+    public Transfer promptForTransferInfo(TransferType type, TransferStatus status, String message) {
+        User[] allUsers = accountService.getAllUsers();
+        Transfer transfer = new Transfer();
+        Long transferId = promptForLong("\n" + message + " (0 to cancel): ");
+        User selectedUser = null;
+        for (User user : allUsers) {
+            if (transferId.equals(user.getId())) {
+                selectedUser = user;
+            }
+        }
+        if (selectedUser == null) {
+            System.out.println("User not found. Please try again.");
+            return null;
+        }
+        BigDecimal amount = promptForBigDecimal("Enter amount: ");
+        while (amount.compareTo(BigDecimal.ZERO) != 1) {
+            System.out.println("\nPlease enter an amount greater than $0.00");
+            amount = promptForBigDecimal("\nEnter amount: ");
+        }
+        switch (type) {
+            case SEND:
+                transfer.setSender(currentUser.getUser());
+                transfer.setReceiver(selectedUser);
+                break;
+            case REQUEST:
+                transfer.setSender(selectedUser);
+                transfer.setReceiver(currentUser.getUser());
+                break;
+        }
+        transfer.setStatus(status);
+        transfer.setType(type);
+        transfer.setAmount(amount);
+        return transfer;
+    }
+
+    public UserCredentials promptForCredentials() {
+        String username = promptForString("\nUsername: ");
+        String password = promptForString("Password: ");
+        return new UserCredentials(username, password);
+    }
+
+    public String promptForString(String prompt) {
+        System.out.print(prompt);
+        return scanner.next();
+    }
+
+    public int promptForInt(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
+
+    public Long promptForLong(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return Long.parseLong(scanner.next());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+    }
+
+    public BigDecimal promptForBigDecimal(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return new BigDecimal(scanner.next());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a decimal number.");
+            }
+        }
     }
 
     public void printGreeting() {
@@ -88,42 +166,6 @@ public class ConsoleService {
             System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(),(isCurrentUserSender ? "To: " : "From: ") + (isCurrentUserSender ? transfer.getReceiver().getUsername() : transfer.getSender().getUsername()),"$"+transfer.getAmount());
         }
         System.out.println("--------------------------------------------");
-    }
-
-    public Long promptForTransferDetails(Transfer[] transfers) {
-        Long transactionId = 1L;
-        while (!(transactionId.equals(0L))) {
-            transactionId = promptForLong("Please enter transfer ID to view details (0 to cancel): ");
-            if ((transactionId.equals(0L))) {
-                return 0L;
-            }
-            printTransactionDetails(transactionId);
-            pause();
-            System.out.println();
-        }
-        return 0L;
-    }
-
-    public Transfer promptForSendTransfer() {
-        User[] allUsers = accountService.getAllUsers();
-        Transfer transfer = new Transfer();
-        Long transferId = promptForLong("\nEnter ID of user you are sending to (0 to cancel): ");
-        User selectedUser = null;
-        for (User user : allUsers) {
-            if (transferId.equals(user.getId())) {
-                selectedUser = user;
-            }
-        }
-        if (selectedUser == null) {
-            System.out.println("User not found. Please try again.");
-            return null;
-        }
-        transfer.setSender(currentUser.getUser());
-        transfer.setReceiver(selectedUser);
-        transfer.setStatus(TransferStatus.APPROVED);
-        transfer.setType(TransferType.SEND);
-        transfer.setAmount(promptForBigDecimal("Enter amount: "));
-        return transfer;
     }
 
     public void printPendingTransfers() {
@@ -185,90 +227,6 @@ public class ConsoleService {
             }
         }
     }
-
-
-    public void printTransactionDetails(Long transactionId) {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<Transfer> response = restTemplate.exchange(baseUrl + "transfer/" + transactionId, HttpMethod.GET, entity, Transfer.class);
-        Transfer transfer = response.getBody();
-        System.out.println("Transfer Details");
-        System.out.println("--------------------------------------------");
-        System.out.println("Id: " + transfer.getTransferId());
-        System.out.println("From: " + transfer.getSender().getUsername());
-        System.out.println("To: " + transfer.getReceiver().getUsername());
-        System.out.println("Type: " + transfer.getType());
-        System.out.println("Status: " + transfer.getStatus());
-        System.out.println("Amount: " + transfer.getAmount());
-        System.out.println("--------------------------------------------");
-    }
-
-    public UserCredentials promptForCredentials() {
-        String username = promptForString("\nUsername: ");
-        String password = promptForString("Password: ");
-        return new UserCredentials(username, password);
-    }
-
-    public String promptForString(String prompt) {
-        System.out.print(prompt);
-        return scanner.next();
-    }
-
-    public Long promptForUserId(String prompt) {
-        System.out.print(prompt);
-        while (true) {
-            try {
-                Long userId = scanner.nextLong();
-                if (userId != 0L) {
-                    return userId;
-                } else {
-                    return 0L;
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Please enter a number.");
-            }
-        }
-    }
-
-    public int promptForInt(String prompt) {
-        System.out.print(prompt);
-        while (true) {
-            try {
-                return Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a number.");
-            }
-        }
-    }
-
-    public Long promptForLong(String prompt) {
-        System.out.print(prompt);
-        while (true) {
-            try {
-                return Long.parseLong(scanner.next());
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a number.");
-            }
-        }
-    }
-
-    public BigDecimal promptForBigDecimal(String prompt) {
-        System.out.print(prompt);
-        while (true) {
-            try {
-                return new BigDecimal(scanner.next());
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a decimal number.");
-            }
-        }
-    }
-
-    public HttpHeaders createAuthHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(currentUser.getToken());
-        return headers;
-    }
-
 
     public void pause() {
         System.out.print("\nPress Enter to continue...");

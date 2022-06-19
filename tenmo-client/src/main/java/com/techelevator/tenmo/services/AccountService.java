@@ -20,6 +20,27 @@ public class AccountService {
         this.baseUrl = url;
     }
 
+    public User[] getAllUsers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, entity, User[].class);
+        User[] users = response.getBody();
+        return users;
+    }
+
+    public Transfer[] getCompletedTransfers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] completedTransfers = response.getBody();
+        return completedTransfers;
+    }
+
+    public Transfer[] getPendingTransfers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] pendingTransfers = response.getBody();
+        return pendingTransfers;
+    }
+
     public String getUserBalance() {
         // Create a http entity that includes headers containing the current user's jwt
         HttpEntity<String> entity = new HttpEntity<String>(createAuthHeader());
@@ -47,38 +68,6 @@ public class AccountService {
         return false;
     }
 
-    public User[] getAllUsers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<User[]> response = restTemplate.exchange(baseUrl + "users", HttpMethod.GET, entity, User[].class);
-        User[] users = response.getBody();
-        return users;
-    }
-
-    public User getUserByUserId(Long id) {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        try {
-            ResponseEntity<User> response = restTemplate.exchange(baseUrl + "users/" + id, HttpMethod.GET, entity, User.class);
-            return response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public Transfer[] getCompletedTransfers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
-        Transfer[] completedTransfers = response.getBody();
-        return completedTransfers;
-    }
-
-    public Transfer[] getPendingTransfers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/pending", HttpMethod.GET, entity, Transfer[].class);
-        Transfer[] pendingTransfers = response.getBody();
-        return pendingTransfers;
-    }
     // Sets headers of the currentUser's jwt
     public HttpHeaders createAuthHeader() {
         HttpHeaders headers = new HttpHeaders();
