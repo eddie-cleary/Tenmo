@@ -14,14 +14,19 @@ import java.util.Scanner;
 public class ConsoleService {
 
     private final String baseUrl;
-    public ConsoleService(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+
+    private final AccountService accountService;
+
     private RestTemplate restTemplate = new RestTemplate();
 
     private AuthenticatedUser currentUser;
 
     private final Scanner scanner = new Scanner(System.in);
+
+    public ConsoleService(String baseUrl, AccountService accountService) {
+        this.baseUrl = baseUrl;
+        this.accountService = accountService;
+    }
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -74,14 +79,12 @@ public class ConsoleService {
         System.out.println("-------------------------------------------");
     }
 
-    public Transfer[] printCompletedTransfers() {
-        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
-        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
-        Transfer[] completedTransfers = response.getBody();
+    public void printCompletedTransfers() {
+        Transfer[] completedTransfers = accountService.getCompletedTransfers();
         if (completedTransfers == null) {
             System.err.println("You have no completed transfers.");
             System.out.println();
-            return null;
+            return;
         }
         System.out.println("--------------------------------------------");
         System.out.printf("%-18s%-18s%-18s\n","ID","From/To","Amount");
@@ -91,7 +94,6 @@ public class ConsoleService {
             System.out.printf("%-18s%-18s%-18s\n",transfer.getTransferId(),(isCurrentUserSender ? "To: " : "From: ") + (isCurrentUserSender ? transfer.getReceiver().getUsername() : transfer.getSender().getUsername()),"$"+transfer.getAmount());
         }
         System.out.println("--------------------------------------------");
-        return completedTransfers;
     }
 
     public Long promptForTransferDetails(Transfer[] transfers) {

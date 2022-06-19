@@ -59,6 +59,13 @@ public class AccountService {
         return null;
     }
 
+    public Transfer[] getCompletedTransfers() {
+        HttpEntity<Void> entity = new HttpEntity<>(createAuthHeader());
+        ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "transfer/completed", HttpMethod.GET, entity, Transfer[].class);
+        Transfer[] completedTransfers = response.getBody();
+        return completedTransfers;
+    }
+
     // Sets headers of the currentUser's jwt
     public HttpHeaders createAuthHeader() {
         HttpHeaders headers = new HttpHeaders();
