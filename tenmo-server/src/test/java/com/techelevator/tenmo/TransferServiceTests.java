@@ -21,6 +21,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -120,5 +121,20 @@ public class TransferServiceTests {
 
         // Assert
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void requestTransfer_throws_DataRetrievalFailureException() throws UserNotFoundException, SQLException {
+        // Arrange
+        Transfer transferToRequest = new Transfer();
+        transferToRequest.setStatus(TransferStatus.PENDING);
+        transferToRequest.setType(TransferType.REQUEST);
+        transferToRequest.setSender(userDao.findUserByUsername("test"));
+        transferToRequest.setReceiver(userDao.findUserByUsername("trial"));
+        transferToRequest.setAmount(new BigDecimal("50.00"));
+
+        // Act & Assert
+        exception.expect(DataRetrievalFailureException.class);
+        sut.requestTransfer(transferToRequest, principal);
     }
 }
