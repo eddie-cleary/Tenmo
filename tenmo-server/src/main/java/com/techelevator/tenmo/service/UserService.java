@@ -15,7 +15,9 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    public UserService() {}
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     // Return balance based on current logged in user
     public BigDecimal getUserBalance(Principal principal) {

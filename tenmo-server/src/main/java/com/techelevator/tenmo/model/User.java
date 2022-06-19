@@ -79,7 +79,6 @@ public class User {
       User user = (User) o;
       return id.equals(user.getId()) &&
               username.equals(user.getUsername()) &&
-              password.equals(user.getPassword()) &&
               activated == user.activated &&
               authorities.equals(user.getAuthorities());
    }
