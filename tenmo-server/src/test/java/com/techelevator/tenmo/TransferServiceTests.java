@@ -150,5 +150,15 @@ public class TransferServiceTests {
         Assert.assertEquals(expected, actual);
     }
 
-    
+    @Test
+    public void approveTransfer_returns_true() throws SQLException {
+        // Arrange
+        boolean expected = true;
+
+        // Act
+        boolean actual = sut.approveTransfer(transferDao.getTransferById(3003L), principal);
+
+        // Assert
+        Assert.assertEquals(expected, actual);
+    }
 }
