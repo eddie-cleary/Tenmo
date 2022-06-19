@@ -39,6 +39,9 @@ public class ConsoleService {
         User[] allUsers = accountService.getAllUsers();
         Transfer transfer = new Transfer();
         Long transferId = promptForLong("\n" + message + " (0 to cancel): ");
+        if (transferId.equals(0L)) {
+            return null;
+        }
         User selectedUser = null;
         for (User user : allUsers) {
             if (transferId.equals(user.getId())) {

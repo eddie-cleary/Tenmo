@@ -111,6 +111,9 @@ public class App {
 	private void sendBucks() {
         consoleService.printAllUsers();
         Transfer transfer = consoleService.promptForTransferInfo(TransferType.SEND, TransferStatus.APPROVED, "Enter ID of user you are sending to");
+        if (transfer == null) {
+            return;
+        }
         if (accountService.handleSendTransfer(transfer)){
             System.out.println("\nSend transfer complete.");
         } else {
