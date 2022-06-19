@@ -24,7 +24,10 @@ public class TransferService {
     @Autowired
     private TransferDao transferDao;
 
-    public TransferService() {}
+    public TransferService(UserDao userDao, TransferDao transferDao) {
+        this.userDao = userDao;
+        this.transferDao = transferDao;
+    }
 
     // Allows a logged in user to send a transfer from their account
     public boolean sendTransfer(Transfer transfer, Principal principal) throws InsufficientBalanceException, UserNotFoundException, SQLException {

@@ -1,3 +1,5 @@
+package com.techelevator.tenmo;
+
 import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
@@ -229,5 +231,4 @@ public class JdbcTransferDaoTests {
         Assert.assertEquals(expected, actual);
         Assert.assertEquals(expectedAllPendingStatus, actualAllPendingStatus);
     }
-
 }
