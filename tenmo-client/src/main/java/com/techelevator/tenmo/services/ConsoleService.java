@@ -42,6 +42,10 @@ public class ConsoleService {
         if (transferId.equals(0L)) {
             return null;
         }
+        if (transferId.equals(currentUser.getUser().getId())) {
+            System.out.println("\nYou cannot send money to yourself.");
+            return null;
+        }
         User selectedUser = null;
         for (User user : allUsers) {
             if (transferId.equals(user.getId())) {
