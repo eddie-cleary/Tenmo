@@ -4,7 +4,6 @@ import com.techelevator.tenmo.dao.JdbcTransferDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.dto.TransferDTO;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
@@ -106,7 +105,7 @@ public class TransferServiceTests {
     }
 
     @Test
-    public void requestTransfer_sends_successful_request() throws UserNotFoundException, SQLException {
+    public void requestTransfer_sends_successful_request() throws UserNotFoundException, SQLException, InsufficientBalanceException {
         // Arrange
         boolean expected = true;
         Transfer transferToRequest = new Transfer();
@@ -124,7 +123,7 @@ public class TransferServiceTests {
     }
 
     @Test
-    public void requestTransfer_throws_DataRetrievalFailureException() throws UserNotFoundException, SQLException {
+    public void requestTransfer_throws_DataRetrievalFailureException() throws UserNotFoundException, SQLException, InsufficientBalanceException {
         // Arrange
         Transfer transferToRequest = new Transfer();
         transferToRequest.setStatus(TransferStatus.PENDING);
@@ -151,7 +150,7 @@ public class TransferServiceTests {
     }
 
     @Test
-    public void approveTransfer_returns_true() throws SQLException {
+    public void approveTransfer_returns_true() throws SQLException, UserNotFoundException, InsufficientBalanceException {
         // Arrange
         boolean expected = true;
 

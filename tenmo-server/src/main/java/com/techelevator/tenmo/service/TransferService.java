@@ -78,7 +78,7 @@ public class TransferService {
 
     public boolean validateTransfer(Transfer transfer, Principal principal) throws InsufficientBalanceException, UserNotFoundException {
         // Make sure the sender has sufficient funds
-        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(transfer.getSender().getId());
+        BigDecimal senderCurrBalance = userDao.findBalanceByUserId(userDao.getSender(transfer).getId());
         if (transfer.getStatus().equals(TransferStatus.APPROVED) && senderCurrBalance.compareTo(transfer.getAmount()) == -1) {
             throw new InsufficientBalanceException("Insufficient balance. You can not send an amount greater than your balance of: $" + userDao.findBalanceByUserId(transfer.getSender().getId()));
         }
@@ -94,6 +94,7 @@ public class TransferService {
         if (receiver.equals(sender)) {
             throw new DataRetrievalFailureException("Sender and receiver can not be the same.");
         }
+        // Transfer validated
         return true;
     }
 

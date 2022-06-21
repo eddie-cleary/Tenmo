@@ -129,6 +129,8 @@ public class App {
         }
         if (accountService.handleSendTransfer(newTransfer)) {
             System.out.println("\nTransfer request complete.");
+        } else {
+            consoleService.printErrorMessage();
         }
 	}
 }

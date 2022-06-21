@@ -35,6 +35,18 @@ public class GlobalExceptionHandler {
     public String handleInsufficientBalanceException(InsufficientBalanceException ex) {
         return ex.getMessage();
     }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(DataRetrievalFailureException.class)
+    public String handleDataRetrievalFailureException(DataRetrievalFailureException ex) {
+        return ex.getMessage();
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadCredentialsException.class)
+    public String handleBadCredentialsException(BadCredentialsException ex) {
+        return ex.getMessage();
+    }
+
+
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ResponseStatusException.class)
@@ -48,15 +60,7 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(DataRetrievalFailureException.class)
-    public String handleDataRetrievalFailureException(DataRetrievalFailureException ex) {
-        return ex.getMessage();
-    }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadCredentialsException.class)
-    public String handleBadCredentialsException(BadCredentialsException ex) {
-        return ex.getMessage();
-    }
+
+
 }

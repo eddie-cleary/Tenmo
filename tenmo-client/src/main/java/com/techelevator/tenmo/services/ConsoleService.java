@@ -216,7 +216,7 @@ public class ConsoleService {
                 case 1:
                     selectedTransfer.setStatus(TransferStatus.APPROVED);
                     if (accountService.handleSendTransfer(selectedTransfer)) {
-                        System.out.println("Transfer approved.");
+                        System.out.println("\nTransfer approved.");
                     } else {
                         printErrorMessage();
                     }
