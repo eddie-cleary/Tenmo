@@ -21,7 +21,7 @@ public class UserService {
 
     // Return balance based on current logged in user
     public BigDecimal getUserBalance(Principal principal) {
-        return userDao.findBalanceByUserId(userDao.findIdByUsername(principal.getName()));
+        return userDao.findBalanceByUserId(userDao.getCurrentUser(principal).getId());
     }
 
     // Returns all users in system, will hide password from jsonignore annotation in User model

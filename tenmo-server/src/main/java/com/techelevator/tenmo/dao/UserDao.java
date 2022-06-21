@@ -1,8 +1,10 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 public interface UserDao {
@@ -20,6 +22,12 @@ public interface UserDao {
     Long findAccountIdByUserId(Long id);
 
     User findUserByAccountId(Long id);
+
+    User getSender(Transfer transfer);
+
+    User getReceiver(Transfer transfer);
+
+    User getCurrentUser(Principal principal);
 
     boolean create(String username, String password);
 }

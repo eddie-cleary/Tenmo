@@ -79,8 +79,7 @@ public class User {
       User user = (User) o;
       return id.equals(user.getId()) &&
               username.equals(user.getUsername()) &&
-              activated == user.activated &&
-              authorities.equals(user.getAuthorities());
+              activated == user.activated;
    }
 
    @Override

@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,6 +140,18 @@ public class JdbcUserDao implements UserDao {
         }
 
         return true;
+    }
+
+    public User getSender(Transfer transfer) {
+        return findUserByUserId(transfer.getSender().getId());
+    }
+
+    public User getReceiver(Transfer transfer) {
+        return findUserByUserId(transfer.getReceiver().getId());
+    }
+
+    public User getCurrentUser(Principal principal) {
+        return findUserByUsername(principal.getName());
     }
 
     private User mapRowToUser(SqlRowSet rs) {

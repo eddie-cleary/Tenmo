@@ -127,6 +127,7 @@ public class App {
         if (newTransfer == null) {
             return;
         }
+        newTransfer.setReceiver(currentUser.getUser());
         if (accountService.handleSendTransfer(newTransfer)) {
             System.out.println("\nTransfer request complete.");
         }

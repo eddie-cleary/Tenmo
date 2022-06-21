@@ -5,6 +5,7 @@ import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.dto.TransferDTO;
+import com.techelevator.tenmo.model.TransferType;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;

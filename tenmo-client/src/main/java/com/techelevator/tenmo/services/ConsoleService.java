@@ -224,7 +224,7 @@ public class ConsoleService {
                 case 2:
                     selectedTransfer.setStatus(TransferStatus.REJECTED);
                     if (accountService.handleSendTransfer(selectedTransfer)) {
-                        System.out.println("Transfer rejected.");
+                        System.out.println("\nTransfer rejected.");
                     } else {
                         printErrorMessage();
                     }
