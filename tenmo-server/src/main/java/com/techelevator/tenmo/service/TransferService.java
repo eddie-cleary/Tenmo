@@ -108,7 +108,7 @@ public class TransferService {
     }
 
     // Returns a TransferDTO based on the transfer id
-    public TransferDTO getTransferDTOById(Long id) {
+    public TransferDTO getTransferDTOByTransferId(Long id) {
         return transferDao.getTransferDTOById(id);
     }
 }

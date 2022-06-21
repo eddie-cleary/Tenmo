@@ -5,7 +5,6 @@ import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.dto.TransferDTO;
-import com.techelevator.tenmo.model.TransferType;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +64,13 @@ public class TransferController {
     // Logged in user can access a transfer if they are the receiver or sender only
     @GetMapping(path = "/{id}")
     public TransferDTO getTransferById(@PathVariable Long id, Principal principal) {
-        User receiver = transferService.getTransferDTOById(id).getReceiver();
-        User sender = transferService.getTransferDTOById(id).getSender();
-        User loggedInUser = userDao.findUserByUsername(principal.getName());
+        TransferDTO transfer = transferService.getTransferDTOByTransferId(id);
+        User receiver = transfer.getReceiver();
+        User sender = transfer.getSender();
+        User currentUser = userDao.getCurrentUser(principal);
         // Make sure logged in user is either the sender or receiver in order to access the transfer.
-        if (loggedInUser.getId().equals(receiver.getId()) || loggedInUser.getId().equals(sender.getId())) {
-            return transferService.getTransferDTOById(id);
+        if (currentUser.getId().equals(receiver.getId()) || currentUser.getId().equals(sender.getId())) {
+            return transferService.getTransferDTOByTransferId(id);
         }
         throw new DataRetrievalFailureException("Failure accessing transfer.");
     }
