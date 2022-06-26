@@ -2,7 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.service.UserService;
+import com.techelevator.tenmo.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class AccountController {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     public AccountController(UserDao userDao){
         this.userDao = userDao;
@@ -26,16 +26,16 @@ public class AccountController {
 
     @GetMapping
     public BigDecimal getUserBalance(Principal principal) {
-        return userService.getUserBalance(principal);
+        return userServiceImpl.getUserBalance(principal);
     }
 
     @GetMapping(path = "/{accountId}")
     public User getUserByAccountId(@PathVariable Long accountId) {
-        return userService.findUserByAccountId(accountId);
+        return userServiceImpl.findUserByAccountId(accountId);
     }
 
     @GetMapping(path = "/userid")
     public Long getAccountIdByUserId(@RequestParam Long id) {
-        return userService.findAccountIdByUserId(id);
+        return userServiceImpl.findAccountIdByUserId(id);
     }
 }

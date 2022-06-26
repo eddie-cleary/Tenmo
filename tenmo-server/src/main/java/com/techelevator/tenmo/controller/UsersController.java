@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.UserService;
+import com.techelevator.tenmo.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UsersController {
 
-    @Autowired
     private UserService userService;
 
-    public UsersController() {}
+    public UsersController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> getAllUsers() {

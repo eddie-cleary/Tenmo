@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.exceptions.UserNotFoundException;
@@ -7,6 +8,7 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.dto.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.service.TransferService;
+import com.techelevator.tenmo.service.TransferServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,13 +23,18 @@ import java.util.List;
 @RequestMapping("transfer")
 @PreAuthorize("isAuthenticated()")
 public class TransferController {
-    @Autowired
-    private UserDao userDao;
 
     @Autowired
+    UserDao userDao;
+
+    @Autowired
+    TransferDao transferDao;
+
     private TransferService transferService;
 
-    public TransferController() {}
+    public TransferController(TransferService transferService) {
+        this.transferService = transferService;
+    }
 
     // Accepts transfers in request body. Depending if it's a request or a send, or the status, it is handled accordingly.
     @PostMapping

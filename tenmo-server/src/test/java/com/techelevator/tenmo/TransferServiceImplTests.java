@@ -9,7 +9,7 @@ import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.model.TransferType;
-import com.techelevator.tenmo.service.TransferService;
+import com.techelevator.tenmo.service.TransferServiceImpl;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
@@ -20,14 +20,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.SQLException;
 
-public class TransferServiceTests {
+public class TransferServiceImplTests {
 
-    private TransferService sut;
+    private TransferServiceImpl sut;
 
     private UserDao userDao;
 
@@ -47,7 +46,7 @@ public class TransferServiceTests {
 
     private EmbeddedDatabase mockDataSource;
 
-    public TransferServiceTests() {
+    public TransferServiceImplTests() {
         principal = Mockito.mock(Principal.class);
         Mockito.when(principal.getName()).thenReturn("test");
     }
@@ -63,7 +62,7 @@ public class TransferServiceTests {
         JdbcTemplate mockTemplate = new JdbcTemplate(mockDataSource);
         userDao = new JdbcUserDao(mockTemplate);
         transferDao = new JdbcTransferDao(mockTemplate, userDao);
-        sut = new TransferService(userDao, transferDao);
+        sut = new TransferServiceImpl(userDao, transferDao);
     }
 
     @After

@@ -6,8 +6,7 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Authority;
 import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.service.TransferService;
-import com.techelevator.tenmo.service.UserService;
+import com.techelevator.tenmo.service.UserServiceImpl;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
@@ -22,9 +21,9 @@ import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
 
-public class UserServiceTests {
+public class UserServiceImplTests {
 
-    private UserService sut;
+    private UserServiceImpl sut;
 
     private UserDao userDao;
 
@@ -44,7 +43,7 @@ public class UserServiceTests {
 
     private EmbeddedDatabase mockDataSource;
 
-    public UserServiceTests() {
+    public UserServiceImplTests() {
         principal = Mockito.mock(Principal.class);
         Mockito.when(principal.getName()).thenReturn("test");
     }
@@ -60,7 +59,7 @@ public class UserServiceTests {
         JdbcTemplate mockTemplate = new JdbcTemplate(mockDataSource);
         userDao = new JdbcUserDao(mockTemplate);
         transferDao = new JdbcTransferDao(mockTemplate, userDao);
-        sut = new UserService(userDao);
+        sut = new UserServiceImpl(userDao);
     }
 
     @After
